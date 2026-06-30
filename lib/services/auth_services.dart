@@ -61,4 +61,10 @@ class AuthService {
   Stream<AuthState> get authStateChanges {
     return supabase.auth.onAuthStateChange;
   }
+
+  Future<void> resendOtp(String email) async {
+  await supabase.auth.signInWithOtp(
+    email: email,
+  );
+}
 }

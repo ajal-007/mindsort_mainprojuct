@@ -143,6 +143,13 @@ Future<AuthDestination> getDestination() async {
 }
 
 
-
+Future<void> resendOtp(String email) async {
+  try {
+    await _authService.resendOtp(email);
+  } on AuthException catch (e) {
+    error = e.message;
+    rethrow;
+  }
+}
 
 }

@@ -89,110 +89,114 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             },
           ),
 
-          // 3. Main Center UI (Logo, Glassmorphism card, and Glowing Brain)
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Glassmorphism Container for the Logo
-                Container(
-                  padding: const EdgeInsets.all(32),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.03),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.08),
-                      width: 1,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF8B5CF6).withOpacity(0.1),
-                        blurRadius: 30,
-                        spreadRadius: 2,
-                      )
-                    ],
-                  ),
-                  child: AnimatedBuilder(
-                    animation: _animationController,
-                    builder: (context, child) {
-                      // Pulsing scale effect
-                      final pulse = 1.0 + (sin(_animationController.value * pi * 2) * 0.04);
-                      return Transform.scale(
-                        scale: pulse,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Glowing AI Brain Icon
-                            ShaderMask(
-                              shaderCallback: (bounds) => const LinearGradient(
-                                colors: [Color(0xFFA78BFA), Color(0xFF3B82F6)], // Purple to Blue
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ).createShader(bounds),
-                              child: const Icon(
-                                Icons.psychology_rounded, // AI Brain Icon
-                                size: 80,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            // MindSort Title
-                            const Text(
-                              'MindSort',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                letterSpacing: 3.5,
-                                shadows: [
-                                  Shadow(
-                                    color: Color(0xFF8B5CF6),
-                                    blurRadius: 15,
+          // 3. Main Center UI & Tagline (Responsive Layout)
+          SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isCompact = constraints.maxHeight < 550;
+                return Column(
+                  children: [
+                    Spacer(flex: isCompact ? 1 : 2),
+                    Center(
+                      child: Container(
+                        padding: EdgeInsets.all(isCompact ? 20 : 32),
+                        margin: const EdgeInsets.symmetric(horizontal: 24),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.03),
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.08),
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF8B5CF6).withOpacity(0.1),
+                              blurRadius: 30,
+                              spreadRadius: 2,
+                            )
+                          ],
+                        ),
+                        child: AnimatedBuilder(
+                          animation: _animationController,
+                          builder: (context, child) {
+                            // Pulsing scale effect
+                            final pulse = 1.0 + (sin(_animationController.value * pi * 2) * 0.04);
+                            return Transform.scale(
+                              scale: pulse,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Glowing AI Brain Icon
+                                  ShaderMask(
+                                    shaderCallback: (bounds) => const LinearGradient(
+                                      colors: [Color(0xFFA78BFA), Color(0xFF3B82F6)], // Purple to Blue
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ).createShader(bounds),
+                                    child: Icon(
+                                      Icons.psychology_rounded, // AI Brain Icon
+                                      size: isCompact ? 60 : 80,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(height: isCompact ? 10 : 16),
+                                  // MindSort Title
+                                  Text(
+                                    'MindSort',
+                                    style: TextStyle(
+                                      fontSize: isCompact ? 26 : 32,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      letterSpacing: 3.5,
+                                      shadows: const [
+                                        Shadow(
+                                          color: Color(0xFF8B5CF6),
+                                          blurRadius: 15,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // 4. Bottom Section: Tagline & Sleek Progress Bar
-          Positioned(
-            bottom: 60,
-            left: 0,
-            right: 0,
-            child: Column(
-              children: [
-                // Futuristic Tagline
-                Text(
-                  'Organize Your Mind. Take Action.',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Premium Cyber Loader
-                SizedBox(
-                  width: 140,
-                  height: 3,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: const LinearProgressIndicator(
-                      backgroundColor: Color(0xFF1E1E38),
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8B5CF6)),
+                      ),
                     ),
-                  ),
-                ),
-              ],
+                    Spacer(flex: isCompact ? 1 : 3),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: isCompact ? 20 : 40),
+                      child: Column(
+                        children: [
+                          // Futuristic Tagline
+                          Text(
+                            'Organize Your Mind. Take Action.',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
+                              fontSize: isCompact ? 12 : 14,
+                              fontWeight: FontWeight.w400,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          // Premium Cyber Loader
+                          SizedBox(
+                            width: 140,
+                            height: 3,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: const LinearProgressIndicator(
+                                backgroundColor: Color(0xFF1E1E38),
+                                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8B5CF6)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],

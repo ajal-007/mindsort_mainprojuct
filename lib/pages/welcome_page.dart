@@ -2,6 +2,8 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:mainsupabase_projuct/pages/login_page.dart';
+
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -50,52 +52,76 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           _buildFloatingBubble(left: 70, bottom: 220, size: 24, delay: 2),
           _buildFloatingBubble(right: 50, bottom: 180, size: 40, delay: 4),
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        FadeTransition(
-                          opacity: _fadeController,
-                          child: _buildHeroBrain(),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 32,
                         ),
-                        const SizedBox(height: 36),
-                        FadeTransition(
-                          opacity: _fadeController,
-                          child: _buildHeadline(),
-                        ),
-                        const SizedBox(height: 20),
-                        FadeTransition(
-                          opacity: _fadeController,
-                          child: Text(
-                            'Brain dump your thoughts, organize what matters, and let AI guide your next step.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 16,
-                              height: 1.55,
-                              color: Colors.white.withOpacity(0.6),
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 420),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      FadeTransition(
+                                        opacity: _fadeController,
+                                        child: _buildHeroBrain(),
+                                      ),
+                                      const SizedBox(height: 36),
+                                      FadeTransition(
+                                        opacity: _fadeController,
+                                        child: _buildHeadline(),
+                                      ),
+                                      const SizedBox(height: 20),
+                                      FadeTransition(
+                                        opacity: _fadeController,
+                                        child: Text(
+                                          'Brain dump your thoughts, organize what matters, and let AI guide your next step.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
+                                            fontSize: 16,
+                                            height: 1.55,
+                                            color: Colors.white.withOpacity(0.6),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                FadeTransition(
+                                  opacity: _fadeController,
+                                  child: _buildActions(),
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                  FadeTransition(
-                    opacity: _fadeController,
-                    child: _buildActions(),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ],
       ),
     );
   }
+
 
   Widget _buildMeshBackground() {
     return Container(
@@ -192,9 +218,11 @@ final rotation = sin(value * 2 * 3.14159) * 0.04;
   }
 
   Widget _buildHeroBrain() {
+    final size = MediaQuery.of(context).size;
+    final brainSize = size.height < 600 ? 160.0 : 260.0;
     return SizedBox(
-      width: 260,
-      height: 260,
+      width: brainSize,
+      height: brainSize,
       child: AnimatedBuilder(
         animation: _glowController,
         builder: (context, child) {
@@ -227,6 +255,7 @@ final rotation = sin(value * 2 * 3.14159) * 0.04;
       ),
     );
   }
+
 
   Widget _buildHeadline() {
     return RichText(
@@ -276,7 +305,12 @@ final rotation = sin(value * 2 * 3.14159) * 0.04;
             borderRadius: BorderRadius.circular(28),
             child: InkWell(
               borderRadius: BorderRadius.circular(28),
-              onTap: () { /* Navigate to next onboarding screen */ },
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                );
+              },
               child: const Center(
                 child: Text(
                   'Get Started',

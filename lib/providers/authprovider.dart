@@ -143,13 +143,18 @@ Future<AuthDestination> getDestination() async {
 }
 
 
-Future<void> resendOtp(String email) async {
-  try {
-    await _authService.resendOtp(email);
-  } on AuthException catch (e) {
-    error = e.message;
-    rethrow;
+  Future<void> resendOtp(String email) async {
+    try {
+      await _authService.resendOtp(email);
+    } on AuthException catch (e) {
+      error = e.message;
+      rethrow;
+    }
   }
-}
 
-}
+  Future<Map<String, dynamic>?> getProfile() async {
+    final user = getCurrentUser();
+    if (user == null) return null;
+    return await _authService.getProfile(user.id);
+  }
+}

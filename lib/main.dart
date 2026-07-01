@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mainsupabase_projuct/pages/complete_profile_screen.dart';
-import 'package:mainsupabase_projuct/pages/login_page.dart';
-import 'package:mainsupabase_projuct/pages/otp_screen.dart';
-import 'package:mainsupabase_projuct/pages/splash_screen.dart';
+import 'package:mainsupabase_projuct/auth_gate/auth_gate.dart';
 import 'package:mainsupabase_projuct/providers/authprovider.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -25,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return   MaterialApp(
-      home: LoginScreen(),
+      home: const AuthGate(),
     );
   }
 }

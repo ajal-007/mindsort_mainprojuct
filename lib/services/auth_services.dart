@@ -63,8 +63,17 @@ class AuthService {
   }
 
   Future<void> resendOtp(String email) async {
-  await supabase.auth.signInWithOtp(
-    email: email,
-  );
+    await supabase.auth.signInWithOtp(
+      email: email,
+    );
+  }
+
+  Future<Map<String, dynamic>?> getProfile(String userId) async {
+    return await supabase
+        .from('profiles')
+        .select()
+        .eq('id', userId)
+        .maybeSingle();
+  }
 }
-}
+

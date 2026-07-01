@@ -20,6 +20,7 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
   final focusNode = FocusNode();
   bool _isFocused = false;
   bool _isPressed = false;
+  bool _isResending = false;
 
   late AnimationController _entranceController;
   late AnimationController _orbController;
@@ -222,7 +223,7 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                           const SizedBox(height: 10),
 
                           Text(
-                            "We've sent a 6-digit verification code.",
+                            "We've sent a 8-digit verification code.",
                             style: TextStyle(
                               fontSize: 15,
                               color: const Color(0xFF9CA3AF),
@@ -377,7 +378,7 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                                                       .trim(),
                                                 );
 
-                                            if (!mounted) return;
+                                            if (!context.mounted) return;
 
                                             if (exists) {
                                               Navigator.pushAndRemoveUntil(
@@ -399,7 +400,7 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                                               );
                                             }
                                           } catch (e) {
-                                            if (!mounted) return;
+                                            if (!context.mounted) return;
 
                                             ScaffoldMessenger.of(
                                               context,
@@ -487,46 +488,53 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                                       ),
                                     ),
                                     GestureDetector(
-                                      onTap: () async {
-                                        try {
-                                          await authProvider.resendOtp(
-                                            widget.email,
-                                          );
+                                      onTap: _isResending
+                                          ? null
+                                          : () async {
+                                              setState(() => _isResending = true);
+                                              try {
+                                                await authProvider.resendOtp(
+                                                  widget.email,
+                                                );
 
-                                          if (!mounted) return;
+                                                if (!context.mounted) return;
 
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                "A new OTP has been sent.",
-                                              ),
-                                            ),
-                                          );
-                                        } catch (_) {
-                                          if (!mounted) return;
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      "A new OTP has been sent.",
+                                                    ),
+                                                  ),
+                                                );
+                                              } catch (_) {
+                                                if (!context.mounted) return;
 
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                authProvider.error ??
-                                                    "Failed to resend OTP",
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                      },
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      authProvider.error ??
+                                                          "Failed to resend OTP",
+                                                    ),
+                                                  ),
+                                                );
+                                              } finally {
+                                                if (mounted) {
+                                                  setState(() => _isResending = false);
+                                                }
+                                              }
+                                            },
                                       child: Text(
-                                        "Resend Code",
-                                        style: const TextStyle(
-                                          color: Color(0xFF9D97FF),
+                                        _isResending ? "Resending..." : "Resend Code",
+                                        style: TextStyle(
+                                          color: _isResending ? const Color(0xFF9CA3AF) : const Color(0xFF9D97FF),
                                           fontSize: 13,
                                           fontWeight: FontWeight.w600,
-                                          decoration: TextDecoration.underline,
-                                          decorationColor: Color(0xFF9D97FF),
+                                          decoration: _isResending ? TextDecoration.none : TextDecoration.underline,
+                                          decorationColor: const Color(0xFF9D97FF),
                                         ),
                                       ),
                                     ),

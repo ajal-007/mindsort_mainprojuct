@@ -17,13 +17,13 @@ class AuthGate extends StatefulWidget {
 
 class _AuthGateState extends State<AuthGate> {
 
-  late final StreamSubscription<AuthState>? _authSubscription;
+ StreamSubscription<AuthState>? _authSubscription;
 
 @override
 void initState() {
   super.initState();
 
-  WidgetsBinding.instance.addPostFrameCallback((_) {
+
     final authProvider = context.read<AuthProvider>();
 
     _authSubscription = authProvider.authStateChanges.listen (
@@ -33,9 +33,10 @@ void initState() {
     await _navigate();
   },
     );
-  });
+  
 }
 void _goTo(Widget page) {
+  if (!mounted) return;
   Navigator.pushAndRemoveUntil(
     context,
     MaterialPageRoute(builder: (_) => page),
@@ -43,7 +44,7 @@ void _goTo(Widget page) {
   );
 }
 Future<void> _navigate() async {
-
+if (!mounted) return;
   final authProvider = context.read<AuthProvider>();
 
   final destination = await authProvider.getDestination();

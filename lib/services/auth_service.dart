@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../core/constants/app_api.dart';
+import '../core/constants/app_keys.dart';
 
 class AuthService {
   final SupabaseClient supabase = Supabase.instance.client;
@@ -23,11 +25,12 @@ class AuthService {
 
   Future<bool> profileExists() async {
     final user = supabase.auth.currentUser;
+    if (user == null) return false;
 
     final profile = await supabase
-        .from('profiles')
+        .from(AppApi.profilesTable)
         .select()
-        .eq('id', user!.id)
+        .eq(AppKeys.profileId, user.id)
         .maybeSingle();
 
     return profile != null;
@@ -36,10 +39,10 @@ class AuthService {
   Future<void> createProfile({required String username}) async {
     final user = supabase.auth.currentUser!;
 
-    await supabase.from('profiles').insert({
-      'id': user.id,
-      'email': user.email,
-      'username': username,
+    await supabase.from(AppApi.profilesTable).insert({
+      AppKeys.profileId: user.id,
+      AppKeys.profileEmail: user.email,
+      AppKeys.profileUsername: username,
     });
   }
 
@@ -70,10 +73,9 @@ class AuthService {
 
   Future<Map<String, dynamic>?> getProfile(String userId) async {
     return await supabase
-        .from('profiles')
+        .from(AppApi.profilesTable)
         .select()
-        .eq('id', userId)
+        .eq(AppKeys.profileId, userId)
         .maybeSingle();
   }
 }
-

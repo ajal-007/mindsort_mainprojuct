@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:mainsupabase_projuct/constants/color_constant.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_icons.dart';
+import '../../core/constants/app_text.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../core/constants/app_radius.dart';
+import '../../core/constants/app_duration.dart';
+import '../../core/theme/app_text_styles.dart';
 
 class AICoach extends StatefulWidget {
   const AICoach({super.key});
@@ -21,16 +27,16 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
   final List<Map<String, dynamic>> _messages = [
     {
       'sender': 'coach',
-      'text': 'Hello! I am your MindSort AI Coach. What is currently occupying your mind? We can organize your thoughts, explore ideas, or find steps to destress.',
+      'text': AppText.coachHello,
       'time': '10:00 AM'
     },
   ];
 
   final List<String> _suggestedPrompts = [
-    'Help me structure my day',
-    'I want to brainstorm a new project',
-    'Explain how to build focus habits',
-    'Help me process some stress'
+    AppText.promptStructureDay,
+    AppText.promptBrainstormProject,
+    AppText.promptFocusHabits,
+    AppText.promptProcessStress
   ];
 
   @override
@@ -38,7 +44,7 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
     super.initState();
     _orbController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
+      duration: AppDuration.welcomeGlow,
     )..repeat(reverse: true);
 
     _orbPulse = Tween<double>(begin: 1.0, end: 1.15).animate(
@@ -62,7 +68,7 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
+          duration: AppDuration.coachScroll,
           curve: Curves.easeOut,
         );
       }
@@ -76,14 +82,14 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
       _messages.add({
         'sender': 'user',
         'text': text,
-        'time': 'Just now',
+        'time': AppText.timeJustNow,
       });
       _isTyping = true;
     });
     _messageController.clear();
     _scrollToBottom();
 
-    Future.delayed(const Duration(milliseconds: 1500), () {
+    Future.delayed(AppDuration.coachResponseDelay, () {
       if (!mounted) return;
 
       String response = "That sounds fascinating. Let's break that down into three actionable steps. How can we simplify the first hurdle you foresee?";
@@ -101,7 +107,7 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
         _messages.add({
           'sender': 'coach',
           'text': response,
-          'time': 'Just now',
+          'time': AppText.timeJustNow,
         });
         _isTyping = false;
       });
@@ -112,19 +118,19 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       body: Column(
         children: [
           // Header
           SafeArea(
             bottom: false,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl, vertical: AppSizes.md),
               decoration: BoxDecoration(
-                color: Colors.transparent,
+                color: AppColors.transparent,
                 border: Border(
                   bottom: BorderSide(
-                    color: Colors.white.withOpacity(0.06),
+                    color: AppColors.white.withOpacity(0.06),
                   ),
                 ),
               ),
@@ -142,51 +148,42 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
                             shape: BoxShape.circle,
                             gradient: const RadialGradient(
                               colors: [
-                                MindSortColors.accent,
-                                MindSortColors.blueAccent,
-                                Colors.transparent
+                                AppColors.primaryAccent,
+                                AppColors.secondaryAccent,
+                                AppColors.transparent
                               ],
                               stops: [0.1, 0.7, 1.0],
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: MindSortColors.accent.withOpacity(0.35),
+                                color: AppColors.primaryAccent.withOpacity(0.35),
                                 blurRadius: 10,
                                 spreadRadius: 2,
                               ),
                             ],
                           ),
                           child: const Icon(
-                            Icons.auto_awesome_rounded,
-                            color: Colors.white,
+                            AppIcons.coach,
+                            color: AppColors.white,
                             size: 18,
                           ),
                         ),
                       );
                     },
                   ),
-                  const SizedBox(width: 14),
+                  const SizedBox(width: AppSizes.mlg),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Coach MindSort',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: -0.2,
-                          ),
+                          AppText.coachHeaderName,
+                          style: AppTextStyles.coachHeaderTitle,
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: AppSizes.xxs),
                         Text(
-                          'Online | Cognitive Guide',
-                          style: TextStyle(
-                            color: Colors.greenAccent.withOpacity(0.85),
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          AppText.coachOnlineSub,
+                          style: AppTextStyles.coachHeaderSub,
                         ),
                       ],
                     ),
@@ -201,7 +198,7 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
             child: ListView.builder(
               controller: _scrollController,
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxl, vertical: AppSizes.xxxl),
               itemCount: _messages.length + (_isTyping ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index == _messages.length && _isTyping) {
@@ -213,15 +210,15 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
                 return Align(
                   alignment: isCoach ? Alignment.centerLeft : Alignment.centerRight,
                   child: Container(
-                    margin: const EdgeInsets.only(bottom: 18),
+                    margin: const EdgeInsets.only(bottom: AppSizes.xl),
                     constraints: BoxConstraints(
                       maxWidth: MediaQuery.of(context).size.width * 0.76,
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSizes.xl, vertical: AppSizes.mlg),
                     decoration: BoxDecoration(
                       color: isCoach
-                          ? Colors.white.withOpacity(0.04)
-                          : MindSortColors.accent.withOpacity(0.85),
+                          ? AppColors.white.withOpacity(0.04)
+                          : AppColors.primaryAccent.withOpacity(0.85),
                       borderRadius: BorderRadius.only(
                         topLeft: const Radius.circular(20),
                         topRight: const Radius.circular(20),
@@ -230,7 +227,7 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
                       ),
                       border: isCoach
                           ? Border.all(
-                              color: Colors.white.withOpacity(0.08),
+                              color: AppColors.white.withOpacity(0.08),
                             )
                           : null,
                     ),
@@ -239,23 +236,16 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
                       children: [
                         Text(
                           msg['text']!,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            height: 1.45,
-                          ),
+                          style: AppTextStyles.coachMessageText,
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: AppSizes.sxs),
                         Align(
                           alignment: Alignment.bottomRight,
                           child: Text(
                             msg['time']!,
-                            style: TextStyle(
-                              color: isCoach
-                                  ? Colors.white30
-                                  : Colors.white70,
-                              fontSize: 10,
-                            ),
+                            style: isCoach
+                                ? AppTextStyles.coachMessageTimeCoach
+                                : AppTextStyles.coachMessageTimeUser,
                           ),
                         ),
                       ],
@@ -270,31 +260,27 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
           if (_messages.length == 1 && !_isTyping)
             Container(
               height: 48,
-              margin: const EdgeInsets.only(bottom: 12),
+              margin: const EdgeInsets.only(bottom: AppSizes.md),
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
                 physics: const BouncingScrollPhysics(),
                 itemCount: _suggestedPrompts.length,
                 itemBuilder: (context, index) {
                   final prompt = _suggestedPrompts[index];
                   return Padding(
-                    padding: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.only(right: AppSizes.sm),
                     child: ActionChip(
-                      backgroundColor: Colors.white.withOpacity(0.04),
+                      backgroundColor: AppColors.white.withOpacity(0.04),
                       side: BorderSide(
-                        color: Colors.white.withOpacity(0.06),
+                        color: AppColors.white.withOpacity(0.06),
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: AppRadius.r16,
                       ),
                       label: Text(
                         prompt,
-                        style: const TextStyle(
-                          color: MindSortColors.accentGlow,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: AppTextStyles.coachChipLabel,
                       ),
                       onPressed: () => _sendMessage(prompt),
                     ),
@@ -305,17 +291,17 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
 
           // Message input field
           Padding(
-            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16, top: 8),
+            padding: const EdgeInsets.only(left: AppSizes.xxl, right: AppSizes.xxl, bottom: AppSizes.lg, top: AppSizes.sm),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.r20,
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.04),
-                    borderRadius: BorderRadius.circular(20),
+                    color: AppColors.white.withOpacity(0.04),
+                    borderRadius: AppRadius.r20,
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.08),
+                      color: AppColors.white.withOpacity(0.08),
                     ),
                   ),
                   child: Row(
@@ -323,13 +309,13 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
                       Expanded(
                         child: TextField(
                           controller: _messageController,
-                          style: const TextStyle(color: Colors.white, fontSize: 15),
+                          style: AppTextStyles.coachInputText,
                           maxLines: null,
-                          decoration: const InputDecoration(
-                            hintText: 'Message Coach...',
-                            hintStyle: TextStyle(color: Colors.white30, fontSize: 15),
+                          decoration: InputDecoration(
+                            hintText: AppText.messageCoachHint,
+                            hintStyle: AppTextStyles.coachInputHint,
                             border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: AppSizes.xxl, vertical: AppSizes.mlg),
                           ),
                           onSubmitted: _sendMessage,
                         ),
@@ -344,12 +330,12 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
                             decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               gradient: LinearGradient(
-                                colors: [MindSortColors.accent, MindSortColors.blueAccent],
+                                colors: [AppColors.primaryAccent, AppColors.secondaryAccent],
                               ),
                             ),
                             child: const Icon(
-                              Icons.send_rounded,
-                              color: Colors.white,
+                              AppIcons.send,
+                              color: AppColors.white,
                               size: 18,
                             ),
                           ),
@@ -370,26 +356,26 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 18),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        margin: const EdgeInsets.only(bottom: AppSizes.xl),
+        padding: const EdgeInsets.symmetric(horizontal: AppSizes.xl, vertical: AppSizes.mlg),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.04),
+          color: AppColors.white.withOpacity(0.04),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
             bottomRight: Radius.circular(20),
           ),
           border: Border.all(
-            color: Colors.white.withOpacity(0.08),
+            color: AppColors.white.withOpacity(0.08),
           ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildDot(0),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppSizes.xs),
             _buildDot(150),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppSizes.xs),
             _buildDot(300),
           ],
         ),
@@ -400,7 +386,7 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
   Widget _buildDot(int delayMs) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
-      duration: const Duration(milliseconds: 600),
+      duration: AppDuration.coachDotAnim,
       curve: Curves.easeInOut,
       onEnd: () {},
       builder: (context, value, child) {
@@ -408,7 +394,7 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
           width: 7,
           height: 7,
           decoration: const BoxDecoration(
-            color: MindSortColors.accent,
+            color: AppColors.primaryAccent,
             shape: BoxShape.circle,
           ),
         );

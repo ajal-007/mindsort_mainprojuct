@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
-import 'package:mainsupabase_projuct/constants/color_constant.dart';
-import 'package:mainsupabase_projuct/pages/login_page.dart';
-import 'package:mainsupabase_projuct/providers/authprovider.dart';
 import 'package:provider/provider.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_icons.dart';
+import '../../core/constants/app_text.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../core/constants/app_radius.dart';
+import '../../core/theme/app_text_styles.dart';
+import '../../providers/auth_provider.dart';
+import '../../shared/widgets/cyber_confirm_dialog.dart';
+import '../authentication/login_page.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -19,7 +24,6 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    // Cache future locally to resolve rebuild loop issue
     _profileFuture = context.read<AuthProvider>().getProfile();
   }
 
@@ -28,7 +32,7 @@ class _ProfileState extends State<Profile> {
     final authProvider = context.read<AuthProvider>();
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       body: SafeArea(
         child: FutureBuilder<Map<String, dynamic>?>(
           future: _profileFuture,
@@ -36,79 +40,70 @@ class _ProfileState extends State<Profile> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(MindSortColors.accent),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryAccent),
                 ),
               );
             }
 
             final profile = snapshot.data;
-            final username = profile?['username'] ?? 'Explorer';
-            final email = profile?['email'] ?? authProvider.getCurrentUser()?.email ?? 'anonymous@mindsort.ai';
+            final username = profile?[AppText.usernameLabel.toLowerCase()] ?? AppText.defaultExplorer;
+            final email = profile?[AppText.emailAddressLabel.toLowerCase()] ?? authProvider.getCurrentUser()?.email ?? 'anonymous@mindsort.ai';
             final initial = username.isNotEmpty ? username[0].toUpperCase() : 'E';
 
             return SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl, vertical: AppSizes.giant),
               child: Column(
                 children: [
                   _buildHeaderCard(username, email, initial),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: AppSizes.giant),
 
                   const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Account Settings',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.2,
-                      ),
+                      AppText.accountSettings,
+                      style: AppTextStyles.profileSectionTitle,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSizes.md),
 
                   _buildSettingsTile(
-                    icon: Icons.person_outline_rounded,
-                    title: 'Personal Details',
-                    subtitle: 'Manage your profile identifier and metadata',
+                    icon: AppIcons.personOutline,
+                    title: AppText.personalDetailsTitle,
+                    subtitle: AppText.personalDetailsSub,
                     onTap: () {},
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSizes.md),
                   
                   _buildSettingsTile(
-                    icon: Icons.lock_outline_rounded,
-                    title: 'Security Keys',
-                    subtitle: 'Configure two-factor and encryption details',
+                    icon: AppIcons.lock,
+                    title: AppText.securityKeysTitle,
+                    subtitle: AppText.securityKeysSub,
                     onTap: () {},
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSizes.md),
                   
                   _buildSettingsTile(
-                    icon: Icons.sync_rounded,
-                    title: 'Cloud Sync database',
-                    subtitle: 'Back up your mental maps to Supabase secure vaults',
+                    icon: AppIcons.syncIcon,
+                    title: AppText.cloudSyncDbTitle,
+                    subtitle: AppText.cloudSyncDbSub,
                     onTap: () {},
                     trailing: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: AppSizes.msm, vertical: AppSizes.xs),
                       decoration: BoxDecoration(
-                        color: Colors.greenAccent.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(8),
+                        color: AppColors.greenAccent.withOpacity(0.12),
+                        borderRadius: AppRadius.r8,
                       ),
                       child: const Text(
-                        'Active',
-                        style: TextStyle(
-                          color: Colors.greenAccent,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        AppText.cloudActiveLabel,
+                        style: AppTextStyles.profileTileActive,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppSizes.huge),
 
                   _buildLogoutButton(context, authProvider),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSizes.xxxl),
                 ],
               ),
             );
@@ -121,12 +116,12 @@ class _ProfileState extends State<Profile> {
   Widget _buildHeaderCard(String username, String email, String initial) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(28),
+      padding: const EdgeInsets.all(AppSizes.giant),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
-        borderRadius: BorderRadius.circular(28),
+        color: AppColors.white.withOpacity(0.04),
+        borderRadius: AppRadius.r28,
         border: Border.all(
-          color: Colors.white.withOpacity(0.08),
+          color: AppColors.white.withOpacity(0.08),
         ),
       ),
       child: Column(
@@ -137,13 +132,13 @@ class _ProfileState extends State<Profile> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: const LinearGradient(
-                colors: [MindSortColors.accent, MindSortColors.blueAccent],
+                colors: [AppColors.primaryAccent, AppColors.secondaryAccent],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: MindSortColors.accent.withOpacity(0.35),
+                  color: AppColors.primaryAccent.withOpacity(0.35),
                   blurRadius: 24,
                 ),
               ],
@@ -152,40 +147,33 @@ class _ProfileState extends State<Profile> {
             child: Text(
               initial,
               style: const TextStyle(
-                color: Colors.white,
-                fontSize: 32,
+                color: AppColors.white,
+                fontSize: AppSizes.huge,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSizes.xxl),
           Text(
             username,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+            style: AppTextStyles.profileUsername,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSizes.sxs),
           Text(
             email,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.4),
-              fontSize: 14,
-            ),
+            style: AppTextStyles.profileEmail,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSizes.xxxl),
           
-          Divider(color: Colors.white.withOpacity(0.06), height: 1),
-          const SizedBox(height: 20),
+          Divider(color: AppColors.white.withOpacity(0.06), height: 1),
+          const SizedBox(height: AppSizes.xxl),
           
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildMiniStat('12d', 'Streak'),
-              _buildMiniStat('48', 'Logs'),
-              _buildMiniStat('Pro', 'Rank'),
+              _buildMiniStat('12d', AppText.streakStat),
+              _buildMiniStat('48', AppText.logsStat),
+              _buildMiniStat('Pro', AppText.rankStat),
             ],
           ),
         ],
@@ -198,19 +186,12 @@ class _ProfileState extends State<Profile> {
       children: [
         Text(
           val,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTextStyles.profileStatVal,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppSizes.xs),
         Text(
           label,
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.35),
-            fontSize: 12,
-          ),
+          style: AppTextStyles.profileStatLabel,
         ),
       ],
     );
@@ -226,67 +207,78 @@ class _ProfileState extends State<Profile> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxl, vertical: AppSizes.lg),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.03),
-          borderRadius: BorderRadius.circular(20),
+          color: AppColors.white.withOpacity(0.03),
+          borderRadius: AppRadius.r20,
           border: Border.all(
-            color: Colors.white.withOpacity(0.06),
+            color: AppColors.white.withOpacity(0.06),
           ),
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(AppSizes.msm),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.04),
+                color: AppColors.white.withOpacity(0.04),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: MindSortColors.accentGlow, size: 22),
+              child: Icon(icon, color: AppColors.lightAccentGlow, size: 22),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: AppSizes.lg),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: AppTextStyles.profileTileTitle,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSizes.xs),
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.4),
-                      fontSize: 12,
-                    ),
+                    style: AppTextStyles.profileTileSub,
                   ),
                 ],
               ),
             ),
-            trailing ?? Icon(Icons.chevron_right_rounded, color: Colors.white.withOpacity(0.25)),
+            trailing ?? Icon(AppIcons.chevronRight, color: AppColors.white.withOpacity(0.25)),
           ],
         ),
       ),
     );
   }
 
+  void _showLogoutConfirmation(BuildContext context, AuthProvider authProvider) {
+    showDialog(
+      context: context,
+      barrierColor: AppColors.black.withOpacity(0.6),
+      builder: (context) {
+        return CyberConfirmDialog(
+          title: AppText.logoutConfirmTitle,
+          content: AppText.logoutConfirmDesc,
+          cancelLabel: AppText.cancelLabel,
+          confirmLabel: AppText.logoutLabel,
+          onConfirm: () async {
+            await authProvider.signOut();
+            if (!context.mounted) return;
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
+              (route) => false,
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildLogoutButton(BuildContext context, AuthProvider authProvider) {
     return GestureDetector(
       onTapDown: (_) => setState(() => _isLogoutPressed = true),
-      onTapUp: (_) async {
+      onTapUp: (_) {
         setState(() => _isLogoutPressed = false);
-        await authProvider.signOut();
-        if (!context.mounted) return;
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-          (route) => false,
-        );
+        _showLogoutConfirmation(context, authProvider);
       },
       onTapCancel: () => setState(() => _isLogoutPressed = false),
       child: AnimatedScale(
@@ -295,10 +287,10 @@ class _ProfileState extends State<Profile> {
         child: Container(
           height: 56,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.redAccent.withOpacity(0.06),
+            borderRadius: AppRadius.r20,
+            color: AppColors.redAccent.withOpacity(0.06),
             border: Border.all(
-              color: Colors.redAccent.withOpacity(0.2),
+              color: AppColors.redAccent.withOpacity(0.2),
               width: 1,
             ),
           ),
@@ -306,18 +298,14 @@ class _ProfileState extends State<Profile> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.logout_rounded,
-                color: Colors.redAccent,
+                AppIcons.logout,
+                color: AppColors.redAccent,
                 size: 20,
               ),
-              SizedBox(width: 10),
+              SizedBox(width: AppSizes.msm),
               Text(
-                'Logout Session',
-                style: TextStyle(
-                  color: Colors.redAccent,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                AppText.logoutSession,
+                style: AppTextStyles.profileLogoutText,
               ),
             ],
           ),

@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
-import 'package:mainsupabase_projuct/constants/color_constant.dart';
-import 'package:mainsupabase_projuct/providers/authprovider.dart';
 import 'package:provider/provider.dart';
-import 'thoughts_page.dart';
-import 'ai_coach.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_icons.dart';
+import '../../core/constants/app_text.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../core/constants/app_radius.dart';
+import '../../core/constants/app_duration.dart';
+import '../../core/theme/app_text_styles.dart';
+import '../../shared/widgets/cyber_grid_painter.dart';
+import '../../shared/widgets/glowing_orb.dart';
+import '../../providers/auth_provider.dart';
+import '../thoughts/thoughts_page.dart';
+import '../assessment/ai_coach.dart';
 import 'insight.dart';
-import 'profile.dart';
+import '../profile/profile.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,12 +36,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.initState();
     _orbController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 8),
+      duration: AppDuration.homeOrb,
     )..repeat(reverse: true);
 
     _entranceController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: AppDuration.homeEntrance,
     )..forward();
 
     _fadeIn = CurvedAnimation(
@@ -73,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     ];
 
     return Scaffold(
-      backgroundColor: MindSortColors.background,
+      backgroundColor: AppColors.backgroundDark,
       body: Stack(
         children: [
           // Background Gradient and Animated Orbs
@@ -88,19 +95,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [MindSortColors.background, MindSortColors.surface],
+                        colors: [AppColors.backgroundDark, AppColors.surfaceDark],
                       ),
                     ),
                   ),
                   Positioned(
                     top: -80 + _orbFloat.value,
                     left: -60 + (t * 30),
-                    child: _buildOrb(340, MindSortColors.accent.withOpacity(0.15)),
+                    child: GlowingOrb(size: 340, color: AppColors.primaryAccent, opacity: 0.15),
                   ),
                   Positioned(
                     bottom: -100 + _orbFloat.value,
                     right: -80 + (t * 40),
-                    child: _buildOrb(380, MindSortColors.blueAccent.withOpacity(0.12)),
+                    child: GlowingOrb(size: 380, color: AppColors.secondaryAccent, opacity: 0.12),
                   ),
                 ],
               );
@@ -109,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
           // Cyber Grid Overlay
           CustomPaint(
-            painter: _GridPainter(),
+            painter: CyberGridPainter(color: AppColors.white.withOpacity(0.02)),
             child: const SizedBox.expand(),
           ),
 
@@ -135,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Center(
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl, vertical: AppSizes.huge),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 540),
           child: FutureBuilder<Map<String, dynamic>?>(
@@ -146,16 +153,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               }
 
               final profile = snapshot.data;
-              final username = profile?['username'] ?? 'Explorer';
-              final email = profile?['email'] ?? authProvider.getCurrentUser()?.email ?? '';
+              final username = profile?[AppText.usernameLabel.toLowerCase()] ?? AppText.defaultExplorer;
+              final email = profile?[AppText.emailAddressLabel.toLowerCase()] ?? authProvider.getCurrentUser()?.email ?? '';
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildHeaderSection(username, email),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppSizes.huge),
                   _buildDashboardCard(),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppSizes.huge),
                 ],
               );
             },
@@ -168,27 +175,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _buildLoadingState() {
     return Center(
       child: Container(
-        padding: const EdgeInsets.all(40),
+        padding: const EdgeInsets.all(AppSizes.massive),
         decoration: BoxDecoration(
-          color: MindSortColors.glassSurface,
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: MindSortColors.border, width: 1),
+          color: AppColors.glassSurface,
+          borderRadius: AppRadius.r28,
+          border: Border.all(color: AppColors.border, width: 1),
         ),
-        child: const Column(
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(MindSortColors.accentGlow),
+            const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.lightAccentGlow),
               strokeWidth: 3,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSizes.xxl),
             Text(
-              'Loading Workspace...',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
+              AppText.loadingWorkspace,
+              style: AppTextStyles.homeLoading,
             ),
           ],
         ),
@@ -206,59 +209,45 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: const LinearGradient(
-              colors: [MindSortColors.accent, MindSortColors.blueAccent],
+              colors: [AppColors.primaryAccent, AppColors.secondaryAccent],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
               BoxShadow(
-                color: MindSortColors.accent.withOpacity(0.35),
+                color: AppColors.primaryAccent.withOpacity(0.35),
                 blurRadius: 28,
                 spreadRadius: 2,
               ),
             ],
             border: Border.all(
-              color: Colors.white.withOpacity(0.2),
+              color: AppColors.white.withOpacity(0.2),
               width: 2,
             ),
           ),
           alignment: Alignment.center,
           child: Text(
             initial,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-            ),
+            style: AppTextStyles.homeInitialText,
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSizes.xxxl),
         ShaderMask(
           shaderCallback: (bounds) => const LinearGradient(
-            colors: [Colors.white, MindSortColors.accentGlow],
+            colors: [AppColors.white, AppColors.lightAccentGlow],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ).createShader(bounds),
           child: Text(
-            'Hello, $username',
-            style: const TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-              letterSpacing: -0.5,
-            ),
+            '${AppText.helloPrefix}$username',
+            style: AppTextStyles.homeHeaderTitle,
             textAlign: TextAlign.center,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSizes.sm),
         Text(
           email,
-          style: const TextStyle(
-            color: Colors.white38,
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            letterSpacing: 0.2,
-          ),
+          style: AppTextStyles.homeHeaderEmail,
           textAlign: TextAlign.center,
         ),
       ],
@@ -267,14 +256,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildDashboardCard() {
     return Container(
-      padding: const EdgeInsets.all(28),
+      padding: const EdgeInsets.all(AppSizes.giant),
       decoration: BoxDecoration(
-        color: MindSortColors.glassSurface,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: MindSortColors.border, width: 1),
+        color: AppColors.glassSurface,
+        borderRadius: AppRadius.r28,
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.35),
+            color: AppColors.black.withOpacity(0.35),
             blurRadius: 40,
             spreadRadius: -4,
             offset: const Offset(0, 16),
@@ -287,44 +276,35 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(AppSizes.msm),
                 decoration: BoxDecoration(
-                  color: MindSortColors.accent.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.primaryAccent.withOpacity(0.12),
+                  borderRadius: AppRadius.r12,
                   border: Border.all(
-                    color: MindSortColors.accent.withOpacity(0.25),
+                    color: AppColors.primaryAccent.withOpacity(0.25),
                   ),
                 ),
                 child: const Icon(
-                  Icons.psychology_rounded,
-                  color: MindSortColors.accentGlow,
-                  size: 24,
+                  AppIcons.psychology,
+                  color: AppColors.lightAccentGlow,
+                  size: AppSizes.xxxl,
                 ),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: AppSizes.mlg),
               const Expanded(
                 child: Text(
-                  'MindSort AI Workspace',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  AppText.workspaceTitle,
+                  style: AppTextStyles.homeDashboardTitle,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          const Text(
-            'Welcome to your command center. Your mind’s chaos is transformed here into clear actions. Start organizing, brainstorming, and letting the assistant structure your thoughts.',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 14,
-              height: 1.55,
-              fontWeight: FontWeight.w400,
-            ),
+          const SizedBox(height: AppSizes.xxl),
+          Text(
+            AppText.workspaceDesc,
+            style: AppTextStyles.homeDashboardDesc,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSizes.xxxl),
           Row(
             children: [
               Container(
@@ -332,17 +312,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 height: 8,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.greenAccent,
+                  color: AppColors.greenAccent,
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: AppSizes.msm),
               const Text(
-                'Cloud Sync: Secured & Active',
-                style: TextStyle(
-                  color: Colors.greenAccent,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
+                AppText.cloudSyncActive,
+                style: AppTextStyles.homeDashboardSync,
               ),
             ],
           ),
@@ -353,10 +329,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildBottomNavigationBar() {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.black,
+      decoration: const BoxDecoration(
+        color: AppColors.black,
         border: Border(
-          top: BorderSide(color: MindSortColors.border, width: 1),
+          top: BorderSide(color: AppColors.border, width: 1),
         ),
       ),
       child: BottomNavigationBar(
@@ -367,67 +343,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           });
         },
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.black,
-        selectedItemColor: MindSortColors.accentGlow,
-        unselectedItemColor: Colors.white38,
+        backgroundColor: AppColors.black,
+        selectedItemColor: AppColors.lightAccentGlow,
+        unselectedItemColor: AppColors.white.withOpacity(0.38),
         elevation: 0,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.space_dashboard_rounded),
-            label: 'Home',
+            icon: Icon(AppIcons.dashboard),
+            label: AppText.homeLabel,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.psychology_rounded),
-            label: 'Thoughts',
+            icon: Icon(AppIcons.psychology),
+            label: AppText.thoughtsLabel,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.auto_awesome_rounded),
-            label: 'Coach',
+            icon: Icon(AppIcons.coach),
+            label: AppText.coachLabel,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_rounded),
-            label: 'Insight',
+            icon: Icon(AppIcons.insight),
+            label: AppText.insightLabel,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: 'Profile',
+            icon: Icon(AppIcons.person),
+            label: AppText.profileLabel,
           ),
         ],
       ),
     );
   }
-
-  Widget _buildOrb(double size, Color color) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [color, Colors.transparent],
-        ),
-      ),
-    );
-  }
-}
-
-class _GridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFFFFFFFF).withOpacity(0.02)
-      ..strokeWidth = 0.5;
-
-    const spacing = 48.0;
-
-    for (double x = 0; x < size.width; x += spacing) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
-    }
-    for (double y = 0; y < size.height; y += spacing) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_GridPainter oldDelegate) => false;
 }

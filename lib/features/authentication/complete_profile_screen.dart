@@ -1,61 +1,59 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:mainsupabase_projuct/providers/authprovider.dart';
 import 'package:provider/provider.dart';
-import 'package:mainsupabase_projuct/navigation/home_screen.dart';
- 
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_icons.dart';
+import '../../core/constants/app_text.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../core/constants/app_radius.dart';
+import '../../core/constants/app_duration.dart';
+import '../../core/theme/app_text_styles.dart';
+import '../../shared/widgets/cyber_grid_painter.dart';
+import '../../shared/widgets/glowing_orb.dart';
+import '../../providers/auth_provider.dart';
+import '../dashboard/home_screen.dart';
+
 class CompleteProfileScreen extends StatefulWidget {
   const CompleteProfileScreen({super.key});
- 
+
   @override
   State<CompleteProfileScreen> createState() => _CompleteProfileScreenState();
 }
- 
+
 class _CompleteProfileScreenState extends State<CompleteProfileScreen>
     with TickerProviderStateMixin {
   final usernameController = TextEditingController();
   final usernameFocus = FocusNode();
- 
+
   bool _isLoading = false;
   bool _isFocused = false;
   bool _isPressed = false;
- 
+
   late final AnimationController _entranceController;
   late final AnimationController _orbController;
   late final AnimationController _iconController;
- 
+
   late final Animation<double> _fadeAnim;
   late final Animation<Offset> _slideAnim;
   late final Animation<double> _iconBounce;
- 
-  // Colors
-  static const _bg1 = Color(0xFF070B16);
-  static const _bg2 = Color(0xFF111827);
-  static const _accent = Color(0xFF6C63FF);
-  static const _glow = Color(0xFF9D97FF);
-  static const _blue = Color(0xFF5EA8FF);
-  static const _textPrimary = Color(0xFFFFFFFF);
-  static const _textSecondary = Color(0xFF9CA3AF);
-  static const _glass = Color(0x0DFFFFFF);
-  static const _border = Color(0x14FFFFFF);
- 
+
   @override
   void initState() {
     super.initState();
- 
+
     _entranceController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
+      duration: AppDuration.otpEntrance,
     );
     _orbController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 6),
+      duration: AppDuration.loginOrb,
     )..repeat(reverse: true);
     _iconController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: AppDuration.loginEntrance,
     )..repeat(reverse: true);
- 
+
     _fadeAnim = CurvedAnimation(
       parent: _entranceController,
       curve: const Interval(0.0, 0.7, curve: Curves.easeOut),
@@ -70,14 +68,14 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
     _iconBounce = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _iconController, curve: Curves.easeInOut),
     );
- 
+
     _entranceController.forward();
- 
+
     usernameFocus.addListener(() {
       setState(() => _isFocused = usernameFocus.hasFocus);
     });
   }
- 
+
   @override
   void dispose() {
     usernameController.dispose();
@@ -87,67 +85,67 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
     _iconController.dispose();
     super.dispose();
   }
- 
- Future<void> _handleContinue() async {
-  if (_isLoading) return;
 
-  final authProvider = context.read<AuthProvider>();
-  final username = usernameController.text.trim();
+  Future<void> _handleContinue() async {
+    if (_isLoading) return;
 
-  if (username.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text("Please enter a username"),
-        backgroundColor: _accent.withOpacity(0.9),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+    final authProvider = context.read<AuthProvider>();
+    final username = usernameController.text.trim();
+
+    if (username.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(AppText.enterUsernamePrompt),
+          backgroundColor: AppColors.primaryAccent.withOpacity(0.9),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: AppRadius.r12,
+          ),
         ),
-      ),
-    );
-    return;
-  }
+      );
+      return;
+    }
 
-  setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
 
-  try {
-    await authProvider.createProfile(username: username);
+    try {
+      await authProvider.createProfile(username: username);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const HomeScreen(),
-      ),
-      (route) => false,
-    );
-  } catch (e) {
-    if (!mounted) return;
-
-    final message = e.toString().replaceFirst("Exception: ", "");
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red.withOpacity(0.85),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
         ),
-      ),
-    );
-  } finally {
-    if (mounted) {
-      setState(() => _isLoading = false);
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      final message = e.toString().replaceFirst("Exception: ", "");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: AppColors.red.withOpacity(0.85),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: AppRadius.r12,
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
-}
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bg1,
+      backgroundColor: AppColors.backgroundDark,
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
@@ -155,7 +153,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl, vertical: AppSizes.huge),
                 child: FadeTransition(
                   opacity: _fadeAnim,
                   child: SlideTransition(
@@ -166,9 +164,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           _buildIconSection(),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: AppSizes.huge),
                           _buildGlassCard(),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: AppSizes.xxl),
                           _buildFooter(),
                         ],
                       ),
@@ -182,7 +180,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
       ),
     );
   }
- 
+
   Widget _buildBackground() {
     return AnimatedBuilder(
       animation: _orbController,
@@ -196,7 +194,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [_bg1, _bg2],
+                  colors: [AppColors.backgroundDark, AppColors.surfaceDark],
                 ),
               ),
             ),
@@ -204,17 +202,17 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
             Positioned(
               top: -80 + (t * 60),
               left: -60 + (t * 30),
-              child: _buildOrb(340, _accent.withOpacity(0.18)),
+              child: GlowingOrb(size: 340, color: AppColors.primaryAccent, opacity: 0.18),
             ),
             // Blue orb
             Positioned(
               bottom: -100 + (t * 50),
               right: -80 + (t * 40),
-              child: _buildOrb(300, _blue.withOpacity(0.14)),
+              child: GlowingOrb(size: 300, color: AppColors.secondaryAccent, opacity: 0.14),
             ),
             // Grid overlay
             CustomPaint(
-              painter: _GridPainter(),
+              painter: CyberGridPainter(color: AppColors.white.withOpacity(0.025)),
               child: const SizedBox.expand(),
             ),
           ],
@@ -222,20 +220,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
       },
     );
   }
- 
-  Widget _buildOrb(double size, Color color) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [color, Colors.transparent],
-        ),
-      ),
-    );
-  }
- 
+
   Widget _buildIconSection() {
     return Column(
       children: [
@@ -246,34 +231,34 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
             return Transform.translate(
               offset: Offset(0, offset),
               child: Container(
-                width: 80,
-                height: 80,
+                width: AppSizes.absolute,
+                height: AppSizes.absolute,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      _accent.withOpacity(0.3),
-                      _blue.withOpacity(0.15),
+                      AppColors.primaryAccent.withOpacity(0.3),
+                      AppColors.secondaryAccent.withOpacity(0.15),
                     ],
                   ),
                   border: Border.all(
-                    color: _glow.withOpacity(0.35),
+                    color: AppColors.lightAccentGlow.withOpacity(0.35),
                     width: 1.5,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: _accent.withOpacity(0.25),
+                      color: AppColors.primaryAccent.withOpacity(0.25),
                       blurRadius: 30,
                       spreadRadius: 4,
                     ),
                   ],
                 ),
                 child: const Icon(
-                  Icons.person_outline_rounded,
-                  color: _glow,
-                  size: 36,
+                  AppIcons.personOutline,
+                  color: AppColors.lightAccentGlow,
+                  size: AppSizes.superHuge,
                 ),
               ),
             );
@@ -282,51 +267,42 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
         const SizedBox(height: 22),
         ShaderMask(
           shaderCallback: (bounds) => const LinearGradient(
-            colors: [_textPrimary, _glow],
+            colors: [AppColors.textPrimary, AppColors.lightAccentGlow],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ).createShader(bounds),
           child: const Text(
-            'Welcome to MindSort',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-              letterSpacing: -0.5,
-            ),
+            AppText.welcomeToMindSort,
+            style: AppTextStyles.completeProfileTitle,
             textAlign: TextAlign.center,
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSizes.msm),
         const Text(
-          'Choose a unique username to personalize\nyour AI workspace.',
-          style: TextStyle(
-            fontSize: 14,
-            color: _textSecondary,
-            height: 1.55,
-          ),
+          AppText.chooseUniqueUsername,
+          style: AppTextStyles.completeProfileSub,
           textAlign: TextAlign.center,
         ),
       ],
     );
   }
- 
+
   Widget _buildGlassCard() {
     return Container(
-      padding: const EdgeInsets.all(28),
+      padding: const EdgeInsets.all(AppSizes.giant),
       decoration: BoxDecoration(
-        color: _glass,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: _border, width: 1),
+        color: AppColors.glassSurface,
+        borderRadius: AppRadius.r28,
+        border: Border.all(color: AppColors.border, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.35),
+            color: AppColors.black.withOpacity(0.35),
             blurRadius: 40,
             spreadRadius: -4,
             offset: const Offset(0, 16),
           ),
           BoxShadow(
-            color: _accent.withOpacity(0.07),
+            color: AppColors.primaryAccent.withOpacity(0.07),
             blurRadius: 60,
             spreadRadius: 0,
           ),
@@ -336,41 +312,37 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildUsernameField(),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSizes.msm),
           const Padding(
             padding: EdgeInsets.only(left: 4),
             child: Text(
-              'This username will be visible inside your MindSort profile.',
-              style: TextStyle(
-                fontSize: 12,
-                color: _textSecondary,
-                height: 1.5,
-              ),
+              AppText.usernameSubtitle,
+              style: AppTextStyles.completeProfileFieldDesc,
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSizes.xxxl),
           _buildContinueButton(),
         ],
       ),
     );
   }
- 
+
   Widget _buildUsernameField() {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
+      duration: AppDuration.googleButtonAnim,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.r16,
         border: Border.all(
           color: _isFocused
-              ? _blue.withOpacity(0.65)
-              : _border,
+              ? AppColors.secondaryAccent.withOpacity(0.65)
+              : AppColors.border,
           width: _isFocused ? 1.5 : 1.0,
         ),
-        color: Colors.white.withOpacity(0.04),
+        color: AppColors.white.withOpacity(0.04),
         boxShadow: _isFocused
             ? [
                 BoxShadow(
-                  color: _blue.withOpacity(0.18),
+                  color: AppColors.secondaryAccent.withOpacity(0.18),
                   blurRadius: 20,
                   spreadRadius: 0,
                 ),
@@ -380,38 +352,34 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
       child: TextField(
         controller: usernameController,
         focusNode: usernameFocus,
-        style: const TextStyle(
-          color: _textPrimary,
-          fontSize: 15,
-          fontWeight: FontWeight.w400,
-        ),
-        cursorColor: _blue,
+        style: AppTextStyles.completeProfileInput,
+        cursorColor: AppColors.secondaryAccent,
         decoration: InputDecoration(
-          labelText: 'Username',
-          hintText: 'Choose a username',
+          labelText: AppText.usernameLabel,
+          hintText: AppText.chooseUsernameHint,
           labelStyle: TextStyle(
-            color: _isFocused ? _blue : _textSecondary,
-            fontSize: 14,
+            color: _isFocused ? AppColors.secondaryAccent : AppColors.textSecondary,
+            fontSize: AppSizes.mlg,
           ),
           hintStyle: TextStyle(
-            color: _textSecondary.withOpacity(0.5),
-            fontSize: 14,
+            color: AppColors.textSecondary.withOpacity(0.5),
+            fontSize: AppSizes.mlg,
           ),
           prefixIcon: Icon(
-            Icons.person_outline_rounded,
-            color: _isFocused ? _blue : _textSecondary,
+            AppIcons.personOutline,
+            color: _isFocused ? AppColors.secondaryAccent : AppColors.textSecondary,
             size: 20,
           ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
+            horizontal: AppSizes.lg,
+            vertical: AppSizes.lg,
           ),
         ),
       ),
     );
   }
- 
+
   Widget _buildContinueButton() {
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
@@ -422,19 +390,19 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
       onTapCancel: () => setState(() => _isPressed = false),
       child: AnimatedScale(
         scale: _isPressed ? 0.97 : 1.0,
-        duration: const Duration(milliseconds: 100),
+        duration: AppDuration.otpResendPress,
         child: Container(
           height: 56,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: AppRadius.r18,
             gradient: const LinearGradient(
-              colors: [_accent, Color(0xFF4338CA)],
+              colors: [AppColors.primaryAccent, AppColors.completeProfileButtonEnd],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
             boxShadow: [
               BoxShadow(
-                color: _accent.withOpacity(0.4),
+                color: AppColors.primaryAccent.withOpacity(0.4),
                 blurRadius: 24,
                 spreadRadius: -2,
                 offset: const Offset(0, 8),
@@ -448,54 +416,24 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
                     height: 22,
                     child: CircularProgressIndicator(
                       strokeWidth: 2.2,
-                      valueColor: AlwaysStoppedAnimation<Color>(_textPrimary),
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.textPrimary),
                     ),
                   )
                 : const Text(
-                    'Continue',
-                    style: TextStyle(
-                      color: _textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.2,
-                    ),
+                    AppText.continueButton,
+                    style: AppTextStyles.completeProfileButton,
                   ),
           ),
         ),
       ),
     );
   }
- 
+
   Widget _buildFooter() {
     return const Text(
-      'You can change your username later from Settings.',
-      style: TextStyle(
-        fontSize: 12,
-        color: Color(0xFF6B7280),
-        height: 1.5,
-      ),
+      AppText.changeUsernameLater,
+      style: AppTextStyles.completeProfileFooter,
       textAlign: TextAlign.center,
     );
   }
-}
- 
-class _GridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFFFFFFFF).withOpacity(0.025)
-      ..strokeWidth = 0.5;
- 
-    const spacing = 48.0;
- 
-    for (double x = 0; x < size.width; x += spacing) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
-    }
-    for (double y = 0; y < size.height; y += spacing) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
-  }
- 
-  @override
-  bool shouldRepaint(_GridPainter oldDelegate) => false;
 }

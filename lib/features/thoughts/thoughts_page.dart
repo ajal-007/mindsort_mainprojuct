@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:mainsupabase_projuct/constants/color_constant.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_icons.dart';
+import '../../core/constants/app_text.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../core/constants/app_radius.dart';
+import '../../core/constants/app_duration.dart';
+import '../../core/theme/app_text_styles.dart';
 
 class ThoughtsPage extends StatefulWidget {
   const ThoughtsPage({super.key});
@@ -11,28 +17,34 @@ class ThoughtsPage extends StatefulWidget {
 
 class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderStateMixin {
   final _searchController = TextEditingController();
-  String _selectedCategory = 'All';
+  String _selectedCategory = AppText.catAll;
 
-  final List<String> _categories = ['All', 'Ideas', 'Tasks', 'Reflections', 'Dreams'];
+  final List<String> _categories = [
+    AppText.catAll,
+    AppText.catIdeas,
+    AppText.catTasks,
+    AppText.catReflections,
+    AppText.catDreams
+  ];
   
   final List<Map<String, String>> _thoughts = [
     {
       'title': 'Cerebral Database Architecture',
-      'category': 'Ideas',
+      'category': AppText.catIdeas,
       'time': '10 min ago',
       'content': 'We need a multi-tenant layout mapped with standard partition keys inside Supabase table metadata.',
       'color': '0xFF6C63FF',
     },
     {
       'title': 'Weekly Action Items',
-      'category': 'Tasks',
+      'category': AppText.catTasks,
       'time': '2 hours ago',
       'content': 'Finish refactoring the theme layout configurations, configure MultiProvider binding rules.',
       'color': '0xFF5EA8FF',
     },
     {
       'title': 'Reflective Journaling Session',
-      'category': 'Reflections',
+      'category': AppText.catReflections,
       'time': '1 day ago',
       'content': 'Focusing on incremental milestones reduces anxiety and helps track daily progress metrics.',
       'color': '0xFF9D97FF',
@@ -52,7 +64,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
 
     _cardEntranceController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: AppDuration.thoughtsEntrance,
     );
 
     _fadeAnimation = CurvedAnimation(
@@ -89,7 +101,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
       _filteredThoughts = _thoughts.where((thought) {
         final matchesSearch = thought['title']!.toLowerCase().contains(query) ||
             thought['content']!.toLowerCase().contains(query);
-        final matchesCategory = _selectedCategory == 'All' || thought['category'] == _selectedCategory;
+        final matchesCategory = _selectedCategory == AppText.catAll || thought['category'] == _selectedCategory;
         return matchesSearch && matchesCategory;
       }).toList();
     });
@@ -99,15 +111,15 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
     if (title.isEmpty || content.isEmpty) return;
     setState(() {
       String hexColor = '0xFF6C63FF';
-      if (category == 'Ideas') hexColor = '0xFF6C63FF';
-      if (category == 'Tasks') hexColor = '0xFF5EA8FF';
-      if (category == 'Reflections') hexColor = '0xFF9D97FF';
-      if (category == 'Dreams') hexColor = '0xFFFF7597';
+      if (category == AppText.catIdeas) hexColor = '0xFF6C63FF';
+      if (category == AppText.catTasks) hexColor = '0xFF5EA8FF';
+      if (category == AppText.catReflections) hexColor = '0xFF9D97FF';
+      if (category == AppText.catDreams) hexColor = '0xFFFF7597';
 
       _thoughts.insert(0, {
         'title': title,
         'category': category,
-        'time': 'Just now',
+        'time': AppText.timeJustNow,
         'content': content,
         'color': hexColor,
       });
@@ -118,7 +130,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
   }
 
   void _showAddThoughtSheet() {
-    String localCategory = 'Ideas';
+    String localCategory = AppText.catIdeas;
     final formKey = GlobalKey<FormState>();
     final titleController = TextEditingController();
     final contentController = TextEditingController();
@@ -126,8 +138,8 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withOpacity(0.6),
+      backgroundColor: AppColors.transparent,
+      barrierColor: AppColors.black.withOpacity(0.6),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
@@ -136,19 +148,19 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                 bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+                borderRadius: AppRadius.top30,
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0D1527).withOpacity(0.9),
+                      color: AppColors.backgroundSheet.withOpacity(0.9),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.08),
+                        color: AppColors.white.withOpacity(0.08),
                         width: 1.5,
                       ),
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+                      borderRadius: AppRadius.top30,
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl, vertical: AppSizes.huge),
                     child: Form(
                       key: formKey,
                       child: Column(
@@ -159,44 +171,39 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
-                                'Capture Thought',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: -0.5,
-                                ),
+                                AppText.captureThought,
+                                style: AppTextStyles.thoughtsSheetTitle,
                               ),
                               IconButton(
-                                icon: const Icon(Icons.close_rounded, color: Colors.white60),
+                                icon: const Icon(AppIcons.close, color: AppColors.white),
                                 onPressed: () => Navigator.pop(context),
                               )
                             ],
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: AppSizes.xxxl),
                           
                           // Title input
                           TextFormField(
                             controller: titleController,
-                            style: const TextStyle(color: Colors.white),
+                            style: AppTextStyles.thoughtsSheetInput,
                             decoration: InputDecoration(
-                              hintText: 'Thought title...',
-                              hintStyle: const TextStyle(color: Colors.white30),
+                              hintText: AppText.thoughtTitleHint,
+                              hintStyle: AppTextStyles.thoughtsSheetInputHint,
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.04),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                              fillColor: AppColors.white.withOpacity(0.04),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: AppSizes.lg, vertical: AppSizes.lg),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
+                                borderRadius: AppRadius.r16,
+                                borderSide: BorderSide(color: AppColors.white.withOpacity(0.08)),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(color: MindSortColors.accent, width: 1.5),
+                                borderRadius: AppRadius.r16,
+                                borderSide: const BorderSide(color: AppColors.primaryAccent, width: 1.5),
                               ),
                             ),
-                            validator: (val) => val == null || val.isEmpty ? 'Please enter a title' : null,
+                            validator: (val) => val == null || val.isEmpty ? AppText.enterTitleValidator : null,
                           ),
-                          const SizedBox(height: 18),
+                          const SizedBox(height: AppSizes.xl),
                           
                           // Category Selectors
                           SizedBox(
@@ -206,21 +213,21 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                               children: _categories.skip(1).map((cat) {
                                 final isSel = localCategory == cat;
                                 return Padding(
-                                  padding: const EdgeInsets.only(right: 8),
+                                  padding: const EdgeInsets.only(right: AppSizes.sm),
                                   child: ChoiceChip(
                                     label: Text(
                                       cat,
                                       style: TextStyle(
-                                        color: isSel ? const Color.fromARGB(255, 0, 0, 0) : Colors.white60,
+                                        color: isSel ? AppColors.black : AppColors.white,
                                         fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
                                       ),
                                     ),
                                     selected: isSel,
-                                    selectedColor: MindSortColors.accent,
-                                    backgroundColor: Colors.black.withOpacity(0.04),
-                                    checkmarkColor: Colors.white,
+                                    selectedColor: AppColors.primaryAccent,
+                                    backgroundColor: AppColors.black.withOpacity(0.04),
+                                    checkmarkColor: AppColors.white,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: AppRadius.r12,
                                     ),
                                     onSelected: (selected) {
                                       if (selected) {
@@ -232,31 +239,31 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                               }).toList(),
                             ),
                           ),
-                          const SizedBox(height: 18),
+                          const SizedBox(height: AppSizes.xl),
                           
                           // Content input
                           TextFormField(
                             controller: contentController,
-                            style: const TextStyle(color: Colors.white),
+                            style: AppTextStyles.thoughtsSheetInput,
                             maxLines: 4,
                             decoration: InputDecoration(
-                              hintText: 'Pour thoughts...',
-                              hintStyle: const TextStyle(color: Colors.white30),
+                              hintText: AppText.pourThoughtsHint,
+                              hintStyle: AppTextStyles.thoughtsSheetInputHint,
                               filled: true,
-                              fillColor: Colors.white.withOpacity(0.04),
-                              contentPadding: const EdgeInsets.all(16),
+                              fillColor: AppColors.white.withOpacity(0.04),
+                              contentPadding: const EdgeInsets.all(AppSizes.lg),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
+                                borderRadius: AppRadius.r16,
+                                borderSide: BorderSide(color: AppColors.white.withOpacity(0.08)),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(color: MindSortColors.accent, width: 1.5),
+                                borderRadius: AppRadius.r16,
+                                borderSide: const BorderSide(color: AppColors.primaryAccent, width: 1.5),
                               ),
                             ),
-                            validator: (val) => val == null || val.isEmpty ? 'Cannot save empty thought' : null,
+                            validator: (val) => val == null || val.isEmpty ? AppText.emptyThoughtValidator : null,
                           ),
-                          const SizedBox(height: 28),
+                          const SizedBox(height: AppSizes.giant),
                           
                           GestureDetector(
                             onTap: () {
@@ -272,13 +279,13 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                             child: Container(
                               height: 52,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: AppRadius.r16,
                                 gradient: const LinearGradient(
-                                  colors: [MindSortColors.accent, MindSortColors.blueAccent],
+                                  colors: [AppColors.primaryAccent, AppColors.secondaryAccent],
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: MindSortColors.accent.withOpacity(0.3),
+                                    color: AppColors.primaryAccent.withOpacity(0.3),
                                     blurRadius: 16,
                                     offset: const Offset(0, 6),
                                   )
@@ -286,12 +293,8 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                               ),
                               alignment: Alignment.center,
                               child: const Text(
-                                'Store Thought',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                AppText.storeThought,
+                                style: AppTextStyles.thoughtsSheetSubmit,
                               ),
                             ),
                           ),
@@ -311,7 +314,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       body: Stack(
         children: [
           CustomScrollView(
@@ -319,26 +322,18 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl, vertical: AppSizes.xxl),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Mind Space',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: -0.5,
-                        ),
+                        AppText.mindSpace,
+                        style: AppTextStyles.thoughtsTitle,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: AppSizes.sxs),
                       Text(
-                        'Manage your recorded mental models',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.5),
-                          fontSize: 15,
-                        ),
+                        AppText.manageMentalModels,
+                        style: AppTextStyles.thoughtsSub,
                       ),
                     ],
                   ),
@@ -348,36 +343,36 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
               // Search Bar & Filter Pills
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl),
                   child: Column(
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(18),
+                        borderRadius: AppRadius.r18,
                         child: BackdropFilter(
                           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.04),
+                              color: AppColors.white.withOpacity(0.04),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.08),
+                                color: AppColors.white.withOpacity(0.08),
                               ),
-                              borderRadius: BorderRadius.circular(18),
+                              borderRadius: AppRadius.r18,
                             ),
                             child: TextField(
                               controller: _searchController,
-                              style: const TextStyle(color: Colors.white),
-                              decoration: const InputDecoration(
-                                prefixIcon: Icon(Icons.search_rounded, color: Colors.white38),
-                                hintText: 'Search logged thoughts...',
-                                hintStyle: TextStyle(color: Colors.white30, fontSize: 15),
+                              style: const TextStyle(color: AppColors.white),
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(AppIcons.search, color: AppColors.white),
+                                hintText: AppText.searchThoughtsHint,
+                                hintStyle: AppTextStyles.thoughtsSearchHint,
                                 border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(vertical: 16),
+                                contentPadding: const EdgeInsets.symmetric(vertical: AppSizes.lg),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: AppSizes.xxl),
                       
                       // Choice Chips
                       SizedBox(
@@ -390,23 +385,23 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                             final cat = _categories[index];
                             final isSel = _selectedCategory == cat;
                             return Padding(
-                              padding: const EdgeInsets.only(right: 8),
+                              padding: const EdgeInsets.only(right: AppSizes.sm),
                               child: ChoiceChip(
                                 label: Text(
                                   cat,
                                   style: TextStyle(
-                                    color: isSel ? Colors.white : Colors.white60,
+                                    color: isSel ? AppColors.white : AppColors.white,
                                     fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
                                   ),
                                 ),
                                 selected: isSel,
-                                selectedColor: MindSortColors.accent,
-                                backgroundColor: Colors.white.withOpacity(0.04),
-                                checkmarkColor: Colors.white,
+                                selectedColor: AppColors.primaryAccent,
+                                backgroundColor: AppColors.white.withOpacity(0.04),
+                                checkmarkColor: AppColors.white,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: AppRadius.r12,
                                   side: BorderSide(
-                                    color: isSel ? Colors.transparent : Colors.white.withOpacity(0.05),
+                                    color: isSel ? AppColors.transparent : AppColors.white.withOpacity(0.05),
                                   ),
                                 ),
                                 onSelected: (selected) {
@@ -427,29 +422,25 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                 ),
               ),
 
-              const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              const SliverToBoxAdapter(child: SizedBox(height: AppSizes.xxxl)),
 
               // Grid items list
               if (_filteredThoughts.isEmpty)
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl, vertical: AppSizes.absolute),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.cloud_off_rounded,
-                          size: 64,
-                          color: Colors.white.withOpacity(0.15),
+                          AppIcons.cloudOff,
+                          size: AppSizes.behemoth,
+                          color: AppColors.white.withOpacity(0.15),
                         ),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: AppSizes.xl),
                         const Text(
-                          'No records found',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          AppText.noRecordsFound,
+                          style: AppTextStyles.thoughtsEmptyTitle,
                         ),
                       ],
                     ),
@@ -457,7 +448,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                 )
               else
                 SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl),
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
@@ -470,13 +461,13 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                           child: SlideTransition(
                             position: _slideAnimation,
                             child: Container(
-                              margin: const EdgeInsets.only(bottom: 16),
-                              padding: const EdgeInsets.all(20),
+                              margin: const EdgeInsets.only(bottom: AppSizes.lg),
+                              padding: const EdgeInsets.all(AppSizes.xxl),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.04),
-                                borderRadius: BorderRadius.circular(24),
+                                color: AppColors.white.withOpacity(0.04),
+                                borderRadius: AppRadius.r24,
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.08),
+                                  color: AppColors.white.withOpacity(0.08),
                                   width: 1,
                                 ),
                               ),
@@ -487,10 +478,10 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                        padding: const EdgeInsets.symmetric(horizontal: AppSizes.msm, vertical: AppSizes.xs),
                                         decoration: BoxDecoration(
                                           color: primaryColor.withOpacity(0.15),
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: AppRadius.r8,
                                           border: Border.all(
                                             color: primaryColor.withOpacity(0.35),
                                           ),
@@ -506,30 +497,19 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                                       ),
                                       Text(
                                         thought['time']!,
-                                        style: TextStyle(
-                                          color: Colors.white.withOpacity(0.35),
-                                          fontSize: 12,
-                                        ),
+                                        style: AppTextStyles.thoughtsCardTime,
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 14),
+                                  const SizedBox(height: AppSizes.mlg),
                                   Text(
                                     thought['title']!,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: AppTextStyles.thoughtsCardTitle,
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: AppSizes.sm),
                                   Text(
                                     thought['content']!,
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.65),
-                                      fontSize: 14,
-                                      height: 1.45,
-                                    ),
+                                    style: AppTextStyles.thoughtsCardContent,
                                   ),
                                 ],
                               ),
@@ -541,14 +521,14 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                     ),
                   ),
                 ),
-              const SliverToBoxAdapter(child: SizedBox(height: 80)),
+              const SliverToBoxAdapter(child: SizedBox(height: AppSizes.absolute)),
             ],
           ),
 
           // Floating Action Button
           Positioned(
-            bottom: 16,
-            right: 24,
+            bottom: AppSizes.lg,
+            right: AppSizes.xxxl,
             child: GestureDetector(
               onTap: _showAddThoughtSheet,
               child: Container(
@@ -557,20 +537,20 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: const LinearGradient(
-                    colors: [MindSortColors.accent, MindSortColors.blueAccent],
+                    colors: [AppColors.primaryAccent, AppColors.secondaryAccent],
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: MindSortColors.accent.withOpacity(0.4),
+                      color: AppColors.primaryAccent.withOpacity(0.4),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     )
                   ],
                 ),
                 child: const Icon(
-                  Icons.add_rounded,
-                  color: Colors.white,
-                  size: 32,
+                  AppIcons.add,
+                  color: AppColors.white,
+                  size: AppSizes.huge,
                 ),
               ),
             ),

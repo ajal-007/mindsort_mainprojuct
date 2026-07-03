@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mainsupabase_projuct/pages/complete_profile_screen.dart';
-import 'package:mainsupabase_projuct/navigation/home_screen.dart';
-import 'package:mainsupabase_projuct/providers/authprovider.dart';
 import 'package:provider/provider.dart';
-import 'dart:math' as math;
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_icons.dart';
+import '../../core/constants/app_text.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../core/constants/app_radius.dart';
+import '../../core/constants/app_duration.dart';
+import '../../core/theme/app_text_styles.dart';
+import '../../shared/widgets/cyber_grid_painter.dart';
+import '../../shared/widgets/glowing_orb.dart';
+import '../../providers/auth_provider.dart';
+import '../dashboard/home_screen.dart';
+import 'complete_profile_screen.dart';
 
 class OtpScreen extends StatefulWidget {
   final String email;
@@ -37,15 +45,15 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
 
     _entranceController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
+      duration: AppDuration.otpEntrance,
     );
     _orbController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 6),
+      duration: AppDuration.loginOrb,
     )..repeat(reverse: true);
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 3),
+      duration: AppDuration.otpPulse,
     )..repeat(reverse: true);
 
     _fadeAnim = CurvedAnimation(
@@ -93,41 +101,44 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF070B16),
+      backgroundColor: AppColors.backgroundDark,
       body: Stack(
         children: [
           // Animated background orbs
           AnimatedBuilder(
             animation: _orbAnim,
-            builder: (_, __) {
+            builder: (context, child) {
               final t = _orbAnim.value;
               return Stack(
                 children: [
                   Positioned(
                     top: -80 + (t * 40),
                     left: -60 + (t * 30),
-                    child: _GlowOrb(
-                      color: const Color(0xFF6C63FF),
+                    child: GlowingOrb(
+                      color: AppColors.primaryAccent,
                       size: 320,
                       opacity: 0.18 + (t * 0.07),
+                      useRadialGradient: false,
                     ),
                   ),
                   Positioned(
                     bottom: -60 + (t * 30),
                     right: -80 + (t * 20),
-                    child: _GlowOrb(
-                      color: const Color(0xFF5EA8FF),
+                    child: GlowingOrb(
+                      color: AppColors.secondaryAccent,
                       size: 280,
                       opacity: 0.14 + (t * 0.06),
+                      useRadialGradient: false,
                     ),
                   ),
                   Positioned(
                     top: size.height * 0.4 + (t * 20),
                     left: size.width * 0.6,
-                    child: _GlowOrb(
-                      color: const Color(0xFF9D97FF),
+                    child: GlowingOrb(
+                      color: AppColors.lightAccentGlow,
                       size: 180,
                       opacity: 0.08 + (t * 0.04),
+                      useRadialGradient: false,
                     ),
                   ),
                 ],
@@ -138,7 +149,9 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
           // Subtle grid overlay
           CustomPaint(
             size: Size(size.width, size.height),
-            painter: _GridPainter(),
+            painter: CyberGridPainter(
+              color: AppColors.white.withOpacity(0.022),
+            ),
           ),
 
           // Main content
@@ -146,8 +159,8 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
             child: Center(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 32,
+                  horizontal: AppSizes.xxxl,
+                  vertical: AppSizes.huge,
                 ),
                 child: FadeTransition(
                   opacity: _fadeAnim,
@@ -161,106 +174,88 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                           // Glowing icon
                           AnimatedBuilder(
                             animation: _pulseAnim,
-                            builder: (_, __) => Transform.scale(
+                            builder: (context, child) => Transform.scale(
                               scale: _pulseAnim.value,
                               child: Container(
-                                width: 80,
-                                height: 80,
+                                width: AppSizes.absolute,
+                                height: AppSizes.absolute,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   gradient: const LinearGradient(
                                     colors: [
-                                      Color(0xFF6C63FF),
-                                      Color(0xFF5EA8FF),
+                                      AppColors.primaryAccent,
+                                      AppColors.secondaryAccent,
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(
-                                        0xFF6C63FF,
-                                      ).withOpacity(0.5),
+                                      color: AppColors.primaryAccent.withOpacity(0.5),
                                       blurRadius: 28,
                                       spreadRadius: 4,
                                     ),
                                   ],
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(0.15),
+                                    color: AppColors.white.withOpacity(0.15),
                                     width: 1,
                                   ),
                                 ),
                                 child: const Icon(
-                                  Icons.verified_user_rounded,
-                                  color: Colors.white,
-                                  size: 36,
+                                  AppIcons.verifiedUser,
+                                  color: AppColors.white,
+                                  size: AppSizes.superHuge,
                                 ),
                               ),
                             ),
                           ),
 
-                          const SizedBox(height: 28),
+                          const SizedBox(height: AppSizes.giant),
 
                           // Gradient title
                           ShaderMask(
                             shaderCallback: (bounds) => const LinearGradient(
-                              colors: [Colors.white, Color(0xFF9D97FF)],
+                              colors: [AppColors.white, AppColors.lightAccentGlow],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ).createShader(bounds),
                             child: const Text(
-                              "Verify your email",
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                                letterSpacing: -0.5,
-                              ),
+                              AppText.verifyEmailTitle,
+                              style: AppTextStyles.otpTitle,
                               textAlign: TextAlign.center,
                             ),
                           ),
 
-                          const SizedBox(height: 10),
+                          const SizedBox(height: AppSizes.msm),
 
-                          Text(
-                            "We've sent a 8-digit verification code.",
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: const Color(0xFF9CA3AF),
-                              fontWeight: FontWeight.w400,
-                            ),
+                          const Text(
+                            AppText.sentCodeSub,
+                            style: AppTextStyles.otpSub,
                             textAlign: TextAlign.center,
                           ),
 
-                          const SizedBox(height: 8),
+                          const SizedBox(height: AppSizes.sm),
 
                           // Masked email chip
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 6,
+                              horizontal: AppSizes.mlg,
+                              vertical: AppSizes.sxs,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF6C63FF).withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(20),
+                              color: AppColors.primaryAccent.withOpacity(0.12),
+                              borderRadius: AppRadius.r20,
                               border: Border.all(
-                                color: const Color(
-                                  0xFF6C63FF,
-                                ).withOpacity(0.25),
+                                color: AppColors.primaryAccent.withOpacity(0.25),
                               ),
                             ),
                             child: Text(
                               maskEmail(widget.email),
-                              style: const TextStyle(
-                                color: Color(0xFF9D97FF),
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 0.2,
-                              ),
+                              style: AppTextStyles.otpChip,
                             ),
                           ),
 
-                          const SizedBox(height: 32),
+                          const SizedBox(height: AppSizes.huge),
 
                           // Glass card
                           _GlassCard(
@@ -269,24 +264,20 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                               children: [
                                 // OTP Input
                                 AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
+                                  duration: AppDuration.googleButtonAnim,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.05),
-                                    borderRadius: BorderRadius.circular(18),
+                                    color: AppColors.white.withOpacity(0.05),
+                                    borderRadius: AppRadius.r18,
                                     border: Border.all(
                                       color: _isFocused
-                                          ? const Color(
-                                              0xFF5EA8FF,
-                                            ).withOpacity(0.6)
-                                          : Colors.white.withOpacity(0.08),
+                                          ? AppColors.secondaryAccent.withOpacity(0.6)
+                                          : AppColors.white.withOpacity(0.08),
                                       width: _isFocused ? 1.5 : 1,
                                     ),
                                     boxShadow: _isFocused
                                         ? [
                                             BoxShadow(
-                                              color: const Color(
-                                                0xFF5EA8FF,
-                                              ).withOpacity(0.15),
+                                              color: AppColors.secondaryAccent.withOpacity(0.15),
                                               blurRadius: 20,
                                               spreadRadius: 2,
                                             ),
@@ -301,48 +292,36 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                                     inputFormatters: [
                                       FilteringTextInputFormatter.digitsOnly,
                                     ],
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      letterSpacing: 4,
-                                    ),
+                                    style: AppTextStyles.otpInput,
                                     decoration: InputDecoration(
                                       counterText: '',
-                                      labelText: "Verification Code",
-                                      hintText: "Enter 8-digit code",
-                                      hintStyle: TextStyle(
-                                        color: const Color(
-                                          0xFF9CA3AF,
-                                        ).withOpacity(0.5),
-                                        letterSpacing: 1,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 14,
-                                      ),
+                                      labelText: AppText.verificationCodeLabel,
+                                      hintText: AppText.enterOtpHint,
+                                      hintStyle: AppTextStyles.otpHint,
                                       labelStyle: TextStyle(
                                         color: _isFocused
-                                            ? const Color(0xFF5EA8FF)
-                                            : const Color(0xFF9CA3AF),
-                                        fontSize: 14,
+                                            ? AppColors.secondaryAccent
+                                            : AppColors.textSecondary,
+                                        fontSize: AppSizes.mlg,
                                       ),
                                       prefixIcon: Icon(
-                                        Icons.password_rounded,
+                                        AppIcons.password,
                                         color: _isFocused
-                                            ? const Color(0xFF5EA8FF)
-                                            : const Color(0xFF9CA3AF),
+                                            ? AppColors.secondaryAccent
+                                            : AppColors.textSecondary,
                                         size: 20,
                                       ),
                                       border: InputBorder.none,
                                       contentPadding:
                                           const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 18,
+                                            horizontal: AppSizes.lg,
+                                            vertical: AppSizes.xl,
                                           ),
                                     ),
                                   ),
                                 ),
 
-                                const SizedBox(height: 24),
+                                const SizedBox(height: AppSizes.xxxl),
 
                                 // Verify button
                                 GestureDetector(
@@ -363,7 +342,7 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                                             ).showSnackBar(
                                               const SnackBar(
                                                 content: Text(
-                                                  "Please enter the OTP",
+                                                  AppText.enterOtpError,
                                                 ),
                                               ),
                                             );
@@ -408,7 +387,7 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                                               SnackBar(
                                                 content: Text(
                                                   authProvider.error ??
-                                                      "OTP verification failed",
+                                                      AppText.verificationFailed,
                                                 ),
                                               ),
                                             );
@@ -416,24 +395,20 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                                         },
                                   child: AnimatedScale(
                                     scale: _isPressed ? 0.97 : 1.0,
-                                    duration: const Duration(milliseconds: 120),
+                                    duration: AppDuration.otpVerifyPress,
                                     child: Container(
                                       height: 56,
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(18),
+                                        borderRadius: AppRadius.r18,
                                         gradient: LinearGradient(
                                           colors: authProvider.isLoading
                                               ? [
-                                                  const Color(
-                                                    0xFF6C63FF,
-                                                  ).withOpacity(0.5),
-                                                  const Color(
-                                                    0xFF4F46E5,
-                                                  ).withOpacity(0.5),
+                                                  AppColors.primaryAccent.withOpacity(0.5),
+                                                  AppColors.buttonAccentEnd.withOpacity(0.5),
                                                 ]
                                               : const [
-                                                  Color(0xFF6C63FF),
-                                                  Color(0xFF4F46E5),
+                                                  AppColors.primaryAccent,
+                                                  AppColors.buttonAccentEnd,
                                                 ],
                                           begin: Alignment.centerLeft,
                                           end: Alignment.centerRight,
@@ -442,9 +417,7 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                                             ? []
                                             : [
                                                 BoxShadow(
-                                                  color: const Color(
-                                                    0xFF6C63FF,
-                                                  ).withOpacity(0.4),
+                                                  color: AppColors.primaryAccent.withOpacity(0.4),
                                                   blurRadius: 20,
                                                   spreadRadius: 1,
                                                   offset: const Offset(0, 4),
@@ -458,34 +431,26 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                                               height: 22,
                                               child: CircularProgressIndicator(
                                                 strokeWidth: 2,
-                                                color: Colors.white,
+                                                color: AppColors.white,
                                               ),
                                             )
                                           : const Text(
-                                              "Verify OTP",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600,
-                                                letterSpacing: 0.3,
-                                              ),
+                                              AppText.verifyOtpBtn,
+                                              style: AppTextStyles.otpVerifyBtn,
                                             ),
                                     ),
                                   ),
                                 ),
 
-                                const SizedBox(height: 20),
+                                const SizedBox(height: AppSizes.xxl),
 
                                 // Resend section
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      "Didn't receive the code?  ",
-                                      style: TextStyle(
-                                        color: const Color(0xFF9CA3AF),
-                                        fontSize: 13,
-                                      ),
+                                    const Text(
+                                      AppText.didntReceiveCode,
+                                      style: AppTextStyles.otpResendLabel,
                                     ),
                                     GestureDetector(
                                       onTap: _isResending
@@ -504,7 +469,7 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                                                 ).showSnackBar(
                                                   const SnackBar(
                                                     content: Text(
-                                                      "A new OTP has been sent.",
+                                                      AppText.otpSentSuccess,
                                                     ),
                                                   ),
                                                 );
@@ -517,7 +482,7 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                                                   SnackBar(
                                                     content: Text(
                                                       authProvider.error ??
-                                                          "Failed to resend OTP",
+                                                          AppText.otpResendFailed,
                                                     ),
                                                   ),
                                                 );
@@ -528,14 +493,10 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                                               }
                                             },
                                       child: Text(
-                                        _isResending ? "Resending..." : "Resend Code",
-                                        style: TextStyle(
-                                          color: _isResending ? const Color(0xFF9CA3AF) : const Color(0xFF9D97FF),
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w600,
-                                          decoration: _isResending ? TextDecoration.none : TextDecoration.underline,
-                                          decorationColor: const Color(0xFF9D97FF),
-                                        ),
+                                        _isResending ? AppText.resending : AppText.resendCode,
+                                        style: _isResending
+                                            ? AppTextStyles.otpResendingBtn
+                                            : AppTextStyles.otpResendBtn,
                                       ),
                                     ),
                                   ],
@@ -544,16 +505,12 @@ class _OtpScreenState extends State<OtpScreen> with TickerProviderStateMixin {
                             ),
                           ),
 
-                          const SizedBox(height: 28),
+                          const SizedBox(height: AppSizes.giant),
 
                           // Footer
                           Text(
-                            "Verification helps keep your MindSort account secure.",
-                            style: TextStyle(
-                              color: const Color(0xFF9CA3AF).withOpacity(0.6),
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                            ),
+                            AppText.secureVerificationFooter,
+                            style: AppTextStyles.otpFooter,
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -578,20 +535,20 @@ class _GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(28),
+      padding: const EdgeInsets.all(AppSizes.giant),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: Colors.white.withOpacity(0.08), width: 1),
+        color: AppColors.white.withOpacity(0.04),
+        borderRadius: AppRadius.r28,
+        border: Border.all(color: AppColors.white.withOpacity(0.08), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.4),
+            color: AppColors.black.withOpacity(0.4),
             blurRadius: 40,
             spreadRadius: 4,
             offset: const Offset(0, 12),
           ),
           BoxShadow(
-            color: const Color(0xFF6C63FF).withOpacity(0.05),
+            color: AppColors.primaryAccent.withOpacity(0.05),
             blurRadius: 60,
             spreadRadius: 10,
           ),
@@ -600,61 +557,4 @@ class _GlassCard extends StatelessWidget {
       child: child,
     );
   }
-}
-
-class _GlowOrb extends StatelessWidget {
-  final Color color;
-  final double size;
-  final double opacity;
-
-  const _GlowOrb({
-    required this.color,
-    required this.size,
-    required this.opacity,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color.withOpacity(opacity),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(opacity * 1.5),
-              blurRadius: size * 0.6,
-              spreadRadius: size * 0.1,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _GridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withOpacity(0.022)
-      ..strokeWidth = 0.5;
-
-    const spacing = 48.0;
-
-    for (double x = 0; x < size.width; x += spacing) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
-    }
-    for (double y = 0; y < size.height; y += spacing) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

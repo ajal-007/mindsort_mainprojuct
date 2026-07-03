@@ -1,9 +1,14 @@
-
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:mainsupabase_projuct/pages/login_page.dart';
-
+import '../../core/constants/app_assets.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_text.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../core/constants/app_radius.dart';
+import '../../core/constants/app_duration.dart';
+import '../../core/theme/app_text_styles.dart';
+import 'login_page.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -21,11 +26,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   void initState() {
     super.initState();
     _floatController = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 6000))..repeat();
+      vsync: this, duration: AppDuration.welcomeFloat)..repeat();
     _glowController = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 4000))..repeat(reverse: true);
+      vsync: this, duration: AppDuration.welcomeGlow)..repeat(reverse: true);
     _fadeController = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 800))..forward();
+      vsync: this, duration: AppDuration.welcomeFade)..forward();
   }
 
   @override
@@ -39,18 +44,18 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1020),
+      backgroundColor: AppColors.backgroundWelcome,
       body: Stack(
         children: [
           _buildMeshBackground(),
           _buildGlowOrb(left: -80, top: 80, size: 280,
-              color: const Color(0xFF8B5CF6), delay: 0),
+              color: AppColors.welcomePurple, delay: 0),
           _buildGlowOrb(right: -80, bottom: 160, size: 360,
-              color: const Color(0xFF00E5FF), delay: 2),
-          _buildFloatingBubble(left: 40, top: 140, size: 48, delay: 0),
-          _buildFloatingBubble(right: 60, top: 220, size: 32, delay: 3),
-          _buildFloatingBubble(left: 70, bottom: 220, size: 24, delay: 2),
-          _buildFloatingBubble(right: 50, bottom: 180, size: 40, delay: 4),
+              color: AppColors.welcomeTeal, delay: 2),
+          _buildFloatingBubble(left: 40, top: 140, size: AppSizes.colossus, delay: 0),
+          _buildFloatingBubble(right: 60, top: 220, size: AppSizes.huge, delay: 3),
+          _buildFloatingBubble(left: 70, bottom: 220, size: AppSizes.xxxl, delay: 2),
+          _buildFloatingBubble(right: 50, bottom: 180, size: AppSizes.massive, delay: 4),
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -62,8 +67,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     child: IntrinsicHeight(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 32,
+                          horizontal: AppSizes.xxxl,
+                          vertical: AppSizes.huge,
                         ),
                         child: Center(
                           child: ConstrainedBox(
@@ -79,29 +84,24 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                         opacity: _fadeController,
                                         child: _buildHeroBrain(),
                                       ),
-                                      const SizedBox(height: 36),
+                                      const SizedBox(height: AppSizes.superHuge),
                                       FadeTransition(
                                         opacity: _fadeController,
                                         child: _buildHeadline(),
                                       ),
-                                      const SizedBox(height: 20),
+                                      const SizedBox(height: AppSizes.xxl),
                                       FadeTransition(
                                         opacity: _fadeController,
                                         child: Text(
-                                          'Brain dump your thoughts, organize what matters, and let AI guide your next step.',
+                                          AppText.welcomeSub,
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontFamily: 'Inter',
-                                            fontSize: 16,
-                                            height: 1.55,
-                                            color: Colors.white.withOpacity(0.6),
-                                          ),
+                                          style: AppTextStyles.welcomeSub,
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                const SizedBox(height: 24),
+                                const SizedBox(height: AppSizes.xxxl),
                                 FadeTransition(
                                   opacity: _fadeController,
                                   child: _buildActions(),
@@ -122,15 +122,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     );
   }
 
-
   Widget _buildMeshBackground() {
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xFF0B1020),
+        color: AppColors.backgroundWelcome,
         gradient: RadialGradient(
           center: Alignment(-0.6, -0.6),
           radius: 1.2,
-          colors: [Color(0x158B5CF6), Color(0x000B1020)],
+          colors: [Color(0x158B5CF6), AppColors.transparent],
         ),
       ),
       child: Container(
@@ -138,7 +137,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           gradient: RadialGradient(
             center: Alignment(0.6, 0.6),
             radius: 1.0,
-            colors: [Color(0x1200E5FF), Color(0x000B1020)],
+            colors: [Color(0x1200E5FF), AppColors.transparent],
           ),
         ),
       ),
@@ -181,8 +180,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       animation: _floatController,
       builder: (context, child) {
         final value = _floatController.value + offset;
-      final y = sin(value * 2 * 3.14159) * 14;
-final rotation = sin(value * 2 * 3.14159) * 0.04;
+        final y = sin(value * 2 * 3.14159) * 14;
+        final rotation = sin(value * 2 * 3.14159) * 0.04;
         return Positioned(
           left: left, right: right, top: top, bottom: bottom,
           child: Transform.translate(
@@ -191,17 +190,17 @@ final rotation = sin(value * 2 * 3.14159) * 0.04;
               angle: rotation,
               child: ClipOval(
                 child: BackdropFilter(
-                  filter:  ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                  filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
                   child: Container(
                     width: size,
                     height: size,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFF141B34).withOpacity(0.6),
-                      border: Border.all(color: Colors.white.withOpacity(0.12)),
+                      color: AppColors.welcomeBubble.withOpacity(0.6),
+                      border: Border.all(color: AppColors.white.withOpacity(0.12)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
+                          color: AppColors.black.withOpacity(0.3),
                           blurRadius: 20,
                           offset: const Offset(0, 8),
                         ),
@@ -234,12 +233,12 @@ final rotation = sin(value * 2 * 3.14159) * 0.04;
                   Color(0x4D8B5CF6),
                   Color(0x333B82F6),
                   Color(0x1A00E5FF),
-                  Colors.transparent,
+                  AppColors.transparent,
                 ],
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF8B5CF6)
+                  color: AppColors.welcomePurple
                       .withOpacity(0.3 + _glowController.value * 0.2),
                   blurRadius: 80 + _glowController.value * 20,
                   spreadRadius: 10,
@@ -247,7 +246,7 @@ final rotation = sin(value * 2 * 3.14159) * 0.04;
               ],
             ),
             child: Image.asset(
-              'assets/images/brain.jpg',
+              AppAssets.brain,
               fit: BoxFit.contain,
             ),
           );
@@ -256,23 +255,16 @@ final rotation = sin(value * 2 * 3.14159) * 0.04;
     );
   }
 
-
   Widget _buildHeadline() {
     return RichText(
       textAlign: TextAlign.center,
-      text: const TextSpan(
-        style: TextStyle(
-          fontFamily: 'Space Grotesk',
-          fontSize: 40,
-          fontWeight: FontWeight.w700,
-          height: 1.08,
-          color: Colors.white,
-        ),
-        children: [
-          TextSpan(text: 'Turn Mental Chaos Into '),
+      text: TextSpan(
+        style: AppTextStyles.welcomeHeadline,
+        children: const [
+          TextSpan(text: AppText.turnMentalChaos),
           TextSpan(
-            text: 'Clear Action',
-            style: TextStyle(color: Color(0xFF00E5FF)),
+            text: AppText.clearAction,
+            style: TextStyle(color: AppColors.welcomeTeal),
           ),
         ],
       ),
@@ -284,27 +276,27 @@ final rotation = sin(value * 2 * 3.14159) * 0.04;
       children: [
         Container(
           width: double.infinity,
-          height: 64,
+          height: AppSizes.behemoth,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: AppRadius.r28,
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF8B5CF6), Color(0xFF3B82F6), Color(0xFF06B6D4)],
+              colors: [AppColors.welcomePurple, AppColors.welcomeBlue, AppColors.welcomeCyan],
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF8B5CF6).withOpacity(0.4),
+                color: AppColors.welcomePurple.withOpacity(0.4),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),
             ],
           ),
           child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(28),
+            color: AppColors.transparent,
+            borderRadius: AppRadius.r28,
             child: InkWell(
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: AppRadius.r28,
               onTap: () {
                 Navigator.push(
                   context,
@@ -313,50 +305,40 @@ final rotation = sin(value * 2 * 3.14159) * 0.04;
               },
               child: const Center(
                 child: Text(
-                  'Get Started',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
+                  AppText.getStarted,
+                  style: AppTextStyles.welcomeBtnGetStarted,
                 ),
               ),
             ),
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: AppSizes.mlg),
         ClipRRect(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: AppRadius.r28,
           child: BackdropFilter(
-            filter:  ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
             child: Container(
               width: double.infinity,
-              height: 64,
+              height: AppSizes.behemoth,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(28),
-                color: const Color(0xFF141B34).withOpacity(0.6),
-                border: Border.all(color: Colors.white.withOpacity(0.12)),
+                borderRadius: AppRadius.r28,
+                color: AppColors.welcomeBubble.withOpacity(0.6),
+                border: Border.all(color: AppColors.white.withOpacity(0.12)),
               ),
               child: Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(28),
+                color: AppColors.transparent,
+                borderRadius: AppRadius.r28,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(28),
+                  borderRadius: AppRadius.r28,
                   onTap: () { /* Google sign-in */ },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(width: 20, height: 20, child: _GoogleIcon()),
-                      SizedBox(width: 12),
+                      SizedBox(width: AppSizes.xxl, height: AppSizes.xxl, child: _GoogleIcon()),
+                      SizedBox(width: AppSizes.md),
                       Text(
-                        'Continue with Google',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                        ),
+                        AppText.continueWithGoogle,
+                        style: AppTextStyles.welcomeBtnGoogle,
                       ),
                     ],
                   ),
@@ -365,8 +347,7 @@ final rotation = sin(value * 2 * 3.14159) * 0.04;
             ),
           ),
         ),
-        const SizedBox(height: 24),
-        
+        const SizedBox(height: AppSizes.xxxl),
       ],
     );
   }
@@ -384,7 +365,7 @@ class _GoogleIconPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white
+      ..color = AppColors.white
       ..style = PaintingStyle.fill;
     final path = Path()
       ..moveTo(size.width * 0.5, size.height * 0.2)

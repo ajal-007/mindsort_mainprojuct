@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mainsupabase_projuct/constants/color_constant.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_icons.dart';
+import '../../core/constants/app_text.dart';
+import '../../core/constants/app_sizes.dart';
+import '../../core/constants/app_radius.dart';
+import '../../core/constants/app_duration.dart';
+import '../../core/theme/app_text_styles.dart';
 
 class Insight extends StatefulWidget {
   const Insight({super.key});
@@ -17,7 +23,7 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
     super.initState();
     _progressController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: AppDuration.insightEntrance,
     );
 
     _clarityPercentage = Tween<double>(begin: 0, end: 78).animate(
@@ -39,66 +45,53 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl, vertical: AppSizes.xxl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Mental Analytics',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.5,
-                ),
+                AppText.mentalAnalytics,
+                style: AppTextStyles.insightTitle,
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppSizes.sxs),
               Text(
-                'AI-driven patterns of your cerebral workspace',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
-                  fontSize: 15,
-                ),
+                AppText.aiWorkspaceSub,
+                style: AppTextStyles.insightSub,
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: AppSizes.giant),
 
               _buildClarityOverviewCard(),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSizes.xxxl),
               
               _buildFocusGraphCard(),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSizes.xxxl),
 
               _buildMetricsGrid(),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSizes.xxxl),
 
               const Text(
-                'Neuromorphic Advice',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.2,
-                ),
+                AppText.neuromorphicAdvice,
+                style: AppTextStyles.insightSectionTitle,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSizes.md),
               _buildAdviceCard(
-                title: 'Peak Clarity Timeslot',
-                desc: 'Your focus scores peak between 9:00 AM and 11:30 AM. Schedule critical strategic work during this window.',
-                icon: Icons.wb_twilight_rounded,
-                color: MindSortColors.blueAccent,
+                title: AppText.advicePeakTitle,
+                desc: AppText.advicePeakDesc,
+                icon: AppIcons.twilight,
+                color: AppColors.secondaryAccent,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSizes.md),
               _buildAdviceCard(
-                title: 'Brain-Dump Deficit',
-                desc: 'You have logged 5 ideas but no general reflections this week. Spending 5 minutes journaling could alleviate mental strain.',
-                icon: Icons.psychology_rounded,
-                color: MindSortColors.accent,
+                title: AppText.adviceDeficitTitle,
+                desc: AppText.adviceDeficitDesc,
+                icon: AppIcons.psychology,
+                color: AppColors.primaryAccent,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSizes.xxxl),
             ],
           ),
         ),
@@ -108,12 +101,12 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
 
   Widget _buildClarityOverviewCard() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSizes.xxxl),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
-        borderRadius: BorderRadius.circular(28),
+        color: AppColors.white.withOpacity(0.04),
+        borderRadius: AppRadius.r28,
         border: Border.all(
-          color: Colors.white.withOpacity(0.08),
+          color: AppColors.white.withOpacity(0.08),
         ),
       ),
       child: Row(
@@ -130,8 +123,8 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
                     child: CustomPaint(
                       painter: _ClarityRingPainter(
                         percentage: _clarityPercentage.value,
-                        ringColor: MindSortColors.accent,
-                        trackColor: Colors.white.withOpacity(0.05),
+                        ringColor: AppColors.primaryAccent,
+                        trackColor: AppColors.white.withOpacity(0.05),
                       ),
                     ),
                   ),
@@ -140,19 +133,11 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
                     children: [
                       Text(
                         '${_clarityPercentage.value.toInt()}%',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: AppTextStyles.insightClarityVal,
                       ),
-                      const Text(
-                        'Clarity',
-                        style: TextStyle(
-                          color: Colors.white38,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      Text(
+                        AppText.clarityLabel,
+                        style: AppTextStyles.insightClarityLabel,
                       ),
                     ],
                   ),
@@ -160,27 +145,19 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
               );
             },
           ),
-          const SizedBox(width: 24),
-          const Expanded(
+          const SizedBox(width: AppSizes.xxxl),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Workspace Score',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                const Text(
+                  AppText.workspaceScoreTitle,
+                  style: AppTextStyles.insightClarityCardTitle,
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: AppSizes.sm),
                 Text(
-                  'Your mind structure is stable. AI detected high cognitive flow and clear distinction between ideation and task logging.',
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 13,
-                    height: 1.45,
-                  ),
+                  AppText.workspaceScoreDesc,
+                  style: AppTextStyles.insightClarityCardDesc,
                 ),
               ],
             ),
@@ -192,12 +169,12 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
 
   Widget _buildFocusGraphCard() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSizes.xxxl),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
-        borderRadius: BorderRadius.circular(28),
+        color: AppColors.white.withOpacity(0.04),
+        borderRadius: AppRadius.r28,
         border: Border.all(
-          color: Colors.white.withOpacity(0.08),
+          color: AppColors.white.withOpacity(0.08),
         ),
       ),
       child: Column(
@@ -206,68 +183,57 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Weekly Focus Level',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  const Text(
+                    AppText.weeklyFocusTitle,
+                    style: AppTextStyles.insightFocusTitle,
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: AppSizes.xxs),
                   Text(
-                    'Avg. 8.2h deep work / day',
-                    style: TextStyle(
-                      color: Colors.white38,
-                      fontSize: 12,
-                    ),
+                    AppText.avgDeepWorkSub,
+                    style: AppTextStyles.insightFocusSub,
                   ),
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: AppSizes.msm, vertical: AppSizes.xs),
                 decoration: BoxDecoration(
-                  color: MindSortColors.blueAccent.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.secondaryAccent.withOpacity(0.12),
+                  borderRadius: AppRadius.r8,
                 ),
                 child: const Text(
-                  '+12% vs last week',
-                  style: TextStyle(
-                    color: MindSortColors.blueAccent,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  AppText.weeklyFocusGrowth,
+                  style: AppTextStyles.insightFocusPercent,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSizes.xxxl),
           
           SizedBox(
             height: 140,
             width: double.infinity,
             child: CustomPaint(
               painter: _FocusCurvePainter(
-                curveColor: MindSortColors.blueAccent,
-                accentColor: MindSortColors.accent,
+                curveColor: AppColors.secondaryAccent,
+                accentColor: AppColors.primaryAccent,
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSizes.md),
           
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Mon', style: TextStyle(color: Colors.white30, fontSize: 11)),
-              Text('Tue', style: TextStyle(color: Colors.white30, fontSize: 11)),
-              Text('Wed', style: TextStyle(color: Colors.white30, fontSize: 11)),
-              Text('Thu', style: TextStyle(color: Colors.white30, fontSize: 11)),
-              Text('Fri', style: TextStyle(color: Colors.white30, fontSize: 11)),
-              Text('Sat', style: TextStyle(color: Colors.white30, fontSize: 11)),
-              Text('Sun', style: TextStyle(color: Colors.white30, fontSize: 11)),
+              Text('Mon', style: TextStyle(color: AppColors.white.withOpacity(0.3), fontSize: 11)),
+              Text('Tue', style: TextStyle(color: AppColors.white.withOpacity(0.3), fontSize: 11)),
+              Text('Wed', style: TextStyle(color: AppColors.white.withOpacity(0.3), fontSize: 11)),
+              Text('Thu', style: TextStyle(color: AppColors.white.withOpacity(0.3), fontSize: 11)),
+              Text('Fri', style: TextStyle(color: AppColors.white.withOpacity(0.3), fontSize: 11)),
+              Text('Sat', style: TextStyle(color: AppColors.white.withOpacity(0.3), fontSize: 11)),
+              Text('Sun', style: TextStyle(color: AppColors.white.withOpacity(0.3), fontSize: 11)),
             ],
           ),
         ],
@@ -280,24 +246,24 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
       builder: (context, constraints) {
         final double cardWidth = (constraints.maxWidth - 16) / 2;
         return Wrap(
-          spacing: 16,
-          runSpacing: 16,
+          spacing: AppSizes.lg,
+          runSpacing: AppSizes.lg,
           children: [
             _buildMetricTile(
               width: cardWidth,
-              title: 'Daily Streak',
-              value: '12 days',
-              sub: 'Continuous logs',
-              icon: Icons.local_fire_department_rounded,
-              color: Colors.orangeAccent,
+              title: AppText.streakTitle,
+              value: AppText.streakValue,
+              sub: AppText.streakSub,
+              icon: AppIcons.fire,
+              color: AppColors.orangeAccent,
             ),
             _buildMetricTile(
               width: cardWidth,
-              title: 'Structured',
-              value: '48 items',
-              sub: 'Thoughts clarified',
-              icon: Icons.rule_rounded,
-              color: MindSortColors.blueAccent,
+              title: AppText.structuredTitle,
+              value: AppText.structuredValue,
+              sub: AppText.structuredSub,
+              icon: AppIcons.rule,
+              color: AppColors.secondaryAccent,
             ),
           ],
         );
@@ -315,12 +281,12 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
   }) {
     return Container(
       width: width,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(AppSizes.xxl),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
-        borderRadius: BorderRadius.circular(24),
+        color: AppColors.white.withOpacity(0.04),
+        borderRadius: AppRadius.r24,
         border: Border.all(
-          color: Colors.white.withOpacity(0.08),
+          color: AppColors.white.withOpacity(0.08),
         ),
       ),
       child: Column(
@@ -331,31 +297,20 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  color: Colors.white38,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: AppTextStyles.insightMetricTitle,
               ),
               Icon(icon, color: color, size: 20),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: AppSizes.mlg),
           Text(
             value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
+            style: AppTextStyles.insightMetricValue,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSizes.xs),
           Text(
             sub,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.4),
-              fontSize: 11,
-            ),
+            style: AppTextStyles.insightMetricSub,
           ),
         ],
       ),
@@ -369,46 +324,38 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(AppSizes.xl),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
-        borderRadius: BorderRadius.circular(20),
+        color: AppColors.white.withOpacity(0.04),
+        borderRadius: AppRadius.r20,
         border: Border.all(
-          color: Colors.white.withOpacity(0.08),
+          color: AppColors.white.withOpacity(0.08),
         ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(AppSizes.msm),
             decoration: BoxDecoration(
               color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.r12,
             ),
             child: Icon(icon, color: color, size: 22),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSizes.lg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTextStyles.insightAdviceTitle,
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSizes.sxs),
                 Text(
                   desc,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.65),
-                    fontSize: 13,
-                    height: 1.45,
-                  ),
+                  style: AppTextStyles.insightAdviceDesc,
                 ),
               ],
             ),
@@ -476,7 +423,7 @@ class _FocusCurvePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final gridPaint = Paint()
-      ..color = Colors.white.withOpacity(0.02)
+      ..color = AppColors.white.withOpacity(0.02)
       ..strokeWidth = 0.8;
 
     final horizontalGridSpacing = size.height / 4;
@@ -538,7 +485,7 @@ class _FocusCurvePainter extends CustomPainter {
 
     final dotPaint = Paint()..color = accentColor;
     final dotOuterPaint = Paint()
-      ..color = Colors.white
+      ..color = AppColors.white
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
 

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mainsupabase_projuct/auth_gate/auth_destination.dart';
 import 'package:mainsupabase_projuct/pages/complete_profile_screen.dart';
-import 'package:mainsupabase_projuct/pages/home_screen.dart';
+import 'package:mainsupabase_projuct/navigation/home_screen.dart';
 import 'package:mainsupabase_projuct/pages/login_page.dart';
 import 'package:mainsupabase_projuct/providers/authprovider.dart';
 import 'package:provider/provider.dart';

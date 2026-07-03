@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mainsupabase_projuct/pages/login_page.dart';
+import 'dart:ui';
+import 'package:mainsupabase_projuct/constants/color_constant.dart';
 import 'package:mainsupabase_projuct/providers/authprovider.dart';
 import 'package:provider/provider.dart';
-
+import 'thoughts_page.dart';
+import 'ai_coach.dart';
+import 'insight.dart';
+import 'profile.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,21 +18,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late final AnimationController _orbController;
   late final AnimationController _entranceController;
-  
   late final Animation<double> _fadeIn;
   late final Animation<Offset> _slideUp;
   late final Animation<double> _orbFloat;
 
-  bool _isLogoutPressed = false;
-
-  // Theme colors
-  static const _bg1 = Color(0xFF070B16);
-  static const _bg2 = Color(0xFF111827);
-  static const _accent = Color(0xFF6C63FF);
-  static const _blue = Color(0xFF5EA8FF);
-  static const _glow = Color(0xFF9D97FF);
-  static const _glass = Color(0x0DFFFFFF);
-  static const _border = Color(0x14FFFFFF);
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -70,10 +64,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = context.read<AuthProvider>();
+    final List<Widget> pages = [
+      _buildHomeBody(context),
+      const ThoughtsPage(),
+      const AICoach(),
+      const Insight(),
+      const Profile(),
+    ];
 
     return Scaffold(
-      backgroundColor: _bg1,
+      backgroundColor: MindSortColors.background,
       body: Stack(
         children: [
           // Background Gradient and Animated Orbs
@@ -88,85 +88,78 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [_bg1, _bg2],
+                        colors: [MindSortColors.background, MindSortColors.surface],
                       ),
                     ),
                   ),
-                  // Animated Purple Orb
                   Positioned(
                     top: -80 + _orbFloat.value,
                     left: -60 + (t * 30),
-                    child: _buildOrb(340, _accent.withOpacity(0.15)),
+                    child: _buildOrb(340, MindSortColors.accent.withOpacity(0.15)),
                   ),
-                  // Animated Blue Orb
                   Positioned(
-                    bottom: -100 - _orbFloat.value,
-                    right: -80 + (t * 30),
-                    child: _buildOrb(300, _blue.withOpacity(0.12)),
-                  ),
-                  // Grid Overlay
-                  CustomPaint(
-                    painter: _GridPainter(),
-                    child: const SizedBox.expand(),
+                    bottom: -100 + _orbFloat.value,
+                    right: -80 + (t * 40),
+                    child: _buildOrb(380, MindSortColors.blueAccent.withOpacity(0.12)),
                   ),
                 ],
               );
             },
           ),
 
-          // Main Responsive Content
-          SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-                child: FadeTransition(
-                  opacity: _fadeIn,
-                  child: SlideTransition(
-                    position: _slideUp,
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 540),
-                      child: FutureBuilder<Map<String, dynamic>?>(
-                        future: authProvider.getProfile(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return _buildLoadingState();
-                          }
-                          
-                          final profile = snapshot.data;
-                          final username = profile?['username'] ?? 'Explorer';
-                          final email = profile?['email'] ?? authProvider.getCurrentUser()?.email ?? '';
+          // Cyber Grid Overlay
+          CustomPaint(
+            painter: _GridPainter(),
+            child: const SizedBox.expand(),
+          ),
 
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              _buildHeaderSection(username, email),
-                              const SizedBox(height: 32),
-                              _buildDashboardCard(),
-                              const SizedBox(height: 32),
-                              _buildLogoutButton(context, authProvider),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
+          // Main View Switcher
+          SafeArea(
+            child: FadeTransition(
+              opacity: _fadeIn,
+              child: SlideTransition(
+                position: _slideUp,
+                child: pages[_currentIndex],
               ),
             ),
           ),
         ],
       ),
+      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
-  Widget _buildOrb(double size, Color color) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: RadialGradient(
-          colors: [color, Colors.transparent],
+  Widget _buildHomeBody(BuildContext context) {
+    final authProvider = context.read<AuthProvider>();
+
+    return Center(
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 540),
+          child: FutureBuilder<Map<String, dynamic>?>(
+            future: authProvider.getProfile(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return _buildLoadingState();
+              }
+
+              final profile = snapshot.data;
+              final username = profile?['username'] ?? 'Explorer';
+              final email = profile?['email'] ?? authProvider.getCurrentUser()?.email ?? '';
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildHeaderSection(username, email),
+                  const SizedBox(height: 32),
+                  _buildDashboardCard(),
+                  const SizedBox(height: 32),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -177,20 +170,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: Container(
         padding: const EdgeInsets.all(40),
         decoration: BoxDecoration(
-          color: _glass,
+          color: MindSortColors.glassSurface,
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: _border, width: 1),
+          border: Border.all(color: MindSortColors.border, width: 1),
         ),
         child: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(_glow),
+              valueColor: AlwaysStoppedAnimation<Color>(MindSortColors.accentGlow),
               strokeWidth: 3,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
-              'Loading your mental workspace...',
+              'Loading Workspace...',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 15,
@@ -207,20 +200,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final initial = username.isNotEmpty ? username[0].toUpperCase() : 'U';
     return Column(
       children: [
-        // Avatar Circle
         Container(
           width: 90,
           height: 90,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: const LinearGradient(
-              colors: [_accent, _blue],
+              colors: [MindSortColors.accent, MindSortColors.blueAccent],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
               BoxShadow(
-                color: _accent.withOpacity(0.35),
+                color: MindSortColors.accent.withOpacity(0.35),
                 blurRadius: 28,
                 spreadRadius: 2,
               ),
@@ -241,10 +233,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ),
         const SizedBox(height: 24),
-        // Greeting
         ShaderMask(
           shaderCallback: (bounds) => const LinearGradient(
-            colors: [Colors.white, _glow],
+            colors: [Colors.white, MindSortColors.accentGlow],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ).createShader(bounds),
@@ -260,7 +251,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ),
         const SizedBox(height: 8),
-        // Email
         Text(
           email,
           style: const TextStyle(
@@ -279,9 +269,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        color: _glass,
+        color: MindSortColors.glassSurface,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: _border, width: 1),
+        border: Border.all(color: MindSortColors.border, width: 1),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.35),
@@ -299,15 +289,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: _accent.withOpacity(0.12),
+                  color: MindSortColors.accent.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: _accent.withOpacity(0.25),
+                    color: MindSortColors.accent.withOpacity(0.25),
                   ),
                 ),
                 child: const Icon(
                   Icons.psychology_rounded,
-                  color: _glow,
+                  color: MindSortColors.accentGlow,
                   size: 24,
                 ),
               ),
@@ -335,7 +325,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           const SizedBox(height: 24),
-          // Dynamic status line
           Row(
             children: [
               Container(
@@ -362,52 +351,60 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildLogoutButton(BuildContext context, AuthProvider authProvider) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _isLogoutPressed = true),
-      onTapUp: (_) async {
-        setState(() => _isLogoutPressed = false);
-        await authProvider.signOut();
-        if (!context.mounted) return;
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-          (route) => false,
-        );
-      },
-      onTapCancel: () => setState(() => _isLogoutPressed = false),
-      child: AnimatedScale(
-        scale: _isLogoutPressed ? 0.97 : 1.0,
-        duration: const Duration(milliseconds: 100),
-        child: Container(
-          height: 56,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            color: Colors.white.withOpacity(0.04),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.12),
-              width: 1,
-            ),
+  Widget _buildBottomNavigationBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black,
+        border: Border(
+          top: BorderSide(color: MindSortColors.border, width: 1),
+        ),
+      ),
+      child: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.black,
+        selectedItemColor: MindSortColors.accentGlow,
+        unselectedItemColor: Colors.white38,
+        elevation: 0,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.space_dashboard_rounded),
+            label: 'Home',
           ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.logout_rounded,
-                color: Colors.redAccent,
-                size: 20,
-              ),
-              SizedBox(width: 10),
-              Text(
-                'Logout Session',
-                style: TextStyle(
-                  color: Colors.redAccent,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+          BottomNavigationBarItem(
+            icon: Icon(Icons.psychology_rounded),
+            label: 'Thoughts',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.auto_awesome_rounded),
+            label: 'Coach',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart_rounded),
+            label: 'Insight',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_rounded),
+            label: 'Profile',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrb(double size, Color color) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [color, Colors.transparent],
         ),
       ),
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mainsupabase_projuct/pages/complete_profile_screen.dart';
-import 'package:mainsupabase_projuct/pages/home_screen.dart';
+import 'package:mainsupabase_projuct/navigation/home_screen.dart';
 import 'package:mainsupabase_projuct/providers/authprovider.dart';
 import 'package:provider/provider.dart';
 import 'dart:math' as math;

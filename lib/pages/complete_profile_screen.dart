@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:mainsupabase_projuct/providers/authprovider.dart';
 import 'package:provider/provider.dart';
-import 'home_screen.dart';
+import 'package:mainsupabase_projuct/navigation/home_screen.dart';
  
 class CompleteProfileScreen extends StatefulWidget {
   const CompleteProfileScreen({super.key});

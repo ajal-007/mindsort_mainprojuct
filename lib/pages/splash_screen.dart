@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:mainsupabase_projuct/pages/login_page.dart'; // Keep your existing imports
-import 'home_screen.dart';
+import 'package:mainsupabase_projuct/navigation/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

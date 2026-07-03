@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_icons.dart';
 import '../../core/constants/app_text.dart';
@@ -7,6 +8,7 @@ import '../../core/constants/app_sizes.dart';
 import '../../core/constants/app_radius.dart';
 import '../../core/constants/app_duration.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../providers/assessment_provider.dart';
 
 class AICoach extends StatefulWidget {
   const AICoach({super.key});
@@ -21,16 +23,6 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
 
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _messageController = TextEditingController();
-
-  bool _isTyping = false;
-
-  final List<Map<String, dynamic>> _messages = [
-    {
-      'sender': 'coach',
-      'text': AppText.coachHello,
-      'time': '10:00 AM'
-    },
-  ];
 
   final List<String> _suggestedPrompts = [
     AppText.promptStructureDay,
@@ -77,46 +69,17 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
 
   void _sendMessage(String text) {
     if (text.trim().isEmpty) return;
-
-    setState(() {
-      _messages.add({
-        'sender': 'user',
-        'text': text,
-        'time': AppText.timeJustNow,
-      });
-      _isTyping = true;
-    });
+    final msg = text;
     _messageController.clear();
-    _scrollToBottom();
-
-    Future.delayed(AppDuration.coachResponseDelay, () {
-      if (!mounted) return;
-
-      String response = "That sounds fascinating. Let's break that down into three actionable steps. How can we simplify the first hurdle you foresee?";
-      if (text.toLowerCase().contains('day')) {
-        response = "To structure your day, let's start with your top 3 non-negotiables. What are the three absolute priorities you need to complete today?";
-      } else if (text.toLowerCase().contains('brainstorm') || text.toLowerCase().contains('project')) {
-        response = "Exciting! A new project is a blank canvas. What is the core problem this project solves? Understanding that will define everything else.";
-      } else if (text.toLowerCase().contains('focus') || text.toLowerCase().contains('habit')) {
-        response = "Habit formation starts with friction reduction. To build focus habits, identify one environmental trigger you can remove. What distracts you first?";
-      } else if (text.toLowerCase().contains('stress')) {
-        response = "Take a slow deep breath. Let's do a brain dump. Write down everything that is bothering you in a list, without formatting. Let's empty the tank first.";
-      }
-
-      setState(() {
-        _messages.add({
-          'sender': 'coach',
-          'text': response,
-          'time': AppText.timeJustNow,
-        });
-        _isTyping = false;
-      });
-      _scrollToBottom();
-    });
+    context.read<AssessmentProvider>().sendMessage(msg, onResponseReceived: _scrollToBottom);
   }
 
   @override
   Widget build(BuildContext context) {
+    final assessmentProvider = context.watch<AssessmentProvider>();
+    final messages = assessmentProvider.messages;
+    final isTyping = assessmentProvider.isTyping;
+
     return Scaffold(
       backgroundColor: AppColors.transparent,
       body: Column(
@@ -199,12 +162,12 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
               controller: _scrollController,
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxl, vertical: AppSizes.xxxl),
-              itemCount: _messages.length + (_isTyping ? 1 : 0),
+              itemCount: messages.length + (isTyping ? 1 : 0),
               itemBuilder: (context, index) {
-                if (index == _messages.length && _isTyping) {
+                if (index == messages.length && isTyping) {
                   return _buildTypingIndicator();
                 }
-                final msg = _messages[index];
+                final msg = messages[index];
                 final isCoach = msg['sender'] == 'coach';
 
                 return Align(
@@ -257,7 +220,7 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
           ),
 
           // Suggestion chips
-          if (_messages.length == 1 && !_isTyping)
+          if (messages.length == 1 && !isTyping)
             Container(
               height: 48,
               margin: const EdgeInsets.only(bottom: AppSizes.md),
@@ -333,14 +296,10 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
                                 colors: [AppColors.primaryAccent, AppColors.secondaryAccent],
                               ),
                             ),
-                            child: const Icon(
-                              AppIcons.send,
-                              color: AppColors.white,
-                              size: 18,
-                            ),
+                            child: const Icon(Icons.arrow_upward, color: AppColors.white, size: 20),
                           ),
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
@@ -357,48 +316,42 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
       alignment: Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.only(bottom: AppSizes.xl),
-        padding: const EdgeInsets.symmetric(horizontal: AppSizes.xl, vertical: AppSizes.mlg),
+        padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxl, vertical: AppSizes.xl),
         decoration: BoxDecoration(
           color: AppColors.white.withOpacity(0.04),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
+            bottomLeft: Radius.zero,
             bottomRight: Radius.circular(20),
           ),
           border: Border.all(
             color: AppColors.white.withOpacity(0.08),
           ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildDot(0),
-            const SizedBox(width: AppSizes.xs),
-            _buildDot(150),
-            const SizedBox(width: AppSizes.xs),
-            _buildDot(300),
-          ],
+        child: SizedBox(
+          width: 40,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(3, (index) {
+              return TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: Duration(milliseconds: 300 + (index * 150)),
+                builder: (context, value, _) {
+                  return Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.white.withOpacity(0.2 + (0.5 * value)),
+                    ),
+                  );
+                },
+              );
+            }),
+          ),
         ),
       ),
-    );
-  }
-
-  Widget _buildDot(int delayMs) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 1.0),
-      duration: AppDuration.coachDotAnim,
-      curve: Curves.easeInOut,
-      onEnd: () {},
-      builder: (context, value, child) {
-        return Container(
-          width: 7,
-          height: 7,
-          decoration: const BoxDecoration(
-            color: AppColors.primaryAccent,
-            shape: BoxShape.circle,
-          ),
-        );
-      },
     );
   }
 }

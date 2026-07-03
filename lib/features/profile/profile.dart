@@ -7,6 +7,7 @@ import '../../core/constants/app_sizes.dart';
 import '../../core/constants/app_radius.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/profile_provider.dart';
 import '../../shared/widgets/cyber_confirm_dialog.dart';
 import '../authentication/login_page.dart';
 
@@ -18,96 +19,96 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  late final Future<Map<String, dynamic>?> _profileFuture;
   bool _isLogoutPressed = false;
 
   @override
   void initState() {
     super.initState();
-    _profileFuture = context.read<AuthProvider>().getProfile();
+    final userId = context.read<AuthProvider>().getCurrentUser()?.id ?? '';
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    Future.microtask(() => profileProvider.loadUserProfile(userId));
   }
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = context.watch<ProfileProvider>();
     final authProvider = context.read<AuthProvider>();
+
+    if (profileProvider.isLoading && profileProvider.profileData == null) {
+      return const Scaffold(
+        backgroundColor: AppColors.transparent,
+        body: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryAccent),
+          ),
+        ),
+      );
+    }
+
+    final profile = profileProvider.profileData;
+    final username = profile?[AppText.usernameLabel.toLowerCase()] ?? AppText.defaultExplorer;
+    final email = profile?[AppText.emailAddressLabel.toLowerCase()] ?? authProvider.getCurrentUser()?.email ?? 'anonymous@mindsort.ai';
+    final initial = username.isNotEmpty ? username[0].toUpperCase() : 'E';
 
     return Scaffold(
       backgroundColor: AppColors.transparent,
       body: SafeArea(
-        child: FutureBuilder<Map<String, dynamic>?>(
-          future: _profileFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryAccent),
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl, vertical: AppSizes.giant),
+          child: Column(
+            children: [
+              _buildHeaderCard(username, email, initial),
+              const SizedBox(height: AppSizes.giant),
+
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  AppText.accountSettings,
+                  style: AppTextStyles.profileSectionTitle,
                 ),
-              );
-            }
-
-            final profile = snapshot.data;
-            final username = profile?[AppText.usernameLabel.toLowerCase()] ?? AppText.defaultExplorer;
-            final email = profile?[AppText.emailAddressLabel.toLowerCase()] ?? authProvider.getCurrentUser()?.email ?? 'anonymous@mindsort.ai';
-            final initial = username.isNotEmpty ? username[0].toUpperCase() : 'E';
-
-            return SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl, vertical: AppSizes.giant),
-              child: Column(
-                children: [
-                  _buildHeaderCard(username, email, initial),
-                  const SizedBox(height: AppSizes.giant),
-
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      AppText.accountSettings,
-                      style: AppTextStyles.profileSectionTitle,
-                    ),
-                  ),
-                  const SizedBox(height: AppSizes.md),
-
-                  _buildSettingsTile(
-                    icon: AppIcons.personOutline,
-                    title: AppText.personalDetailsTitle,
-                    subtitle: AppText.personalDetailsSub,
-                    onTap: () {},
-                  ),
-                  const SizedBox(height: AppSizes.md),
-                  
-                  _buildSettingsTile(
-                    icon: AppIcons.lock,
-                    title: AppText.securityKeysTitle,
-                    subtitle: AppText.securityKeysSub,
-                    onTap: () {},
-                  ),
-                  const SizedBox(height: AppSizes.md),
-                  
-                  _buildSettingsTile(
-                    icon: AppIcons.syncIcon,
-                    title: AppText.cloudSyncDbTitle,
-                    subtitle: AppText.cloudSyncDbSub,
-                    onTap: () {},
-                    trailing: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSizes.msm, vertical: AppSizes.xs),
-                      decoration: BoxDecoration(
-                        color: AppColors.greenAccent.withOpacity(0.12),
-                        borderRadius: AppRadius.r8,
-                      ),
-                      child: const Text(
-                        AppText.cloudActiveLabel,
-                        style: AppTextStyles.profileTileActive,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: AppSizes.huge),
-
-                  _buildLogoutButton(context, authProvider),
-                  const SizedBox(height: AppSizes.xxxl),
-                ],
               ),
-            );
-          },
+              const SizedBox(height: AppSizes.md),
+
+              _buildSettingsTile(
+                icon: AppIcons.personOutline,
+                title: AppText.personalDetailsTitle,
+                subtitle: AppText.personalDetailsSub,
+                onTap: () {},
+              ),
+              const SizedBox(height: AppSizes.md),
+              
+              _buildSettingsTile(
+                icon: AppIcons.lock,
+                title: AppText.securityKeysTitle,
+                subtitle: AppText.securityKeysSub,
+                onTap: () {},
+              ),
+              const SizedBox(height: AppSizes.md),
+              
+              _buildSettingsTile(
+                icon: AppIcons.syncIcon,
+                title: AppText.cloudSyncDbTitle,
+                subtitle: AppText.cloudSyncDbSub,
+                onTap: () {},
+                trailing: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.msm, vertical: AppSizes.xs),
+                  decoration: BoxDecoration(
+                    color: AppColors.greenAccent.withOpacity(0.12),
+                    borderRadius: AppRadius.r8,
+                  ),
+                  child: const Text(
+                    AppText.cloudActiveLabel,
+                    style: AppTextStyles.profileTileActive,
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSizes.huge),
+
+              _buildLogoutButton(context, authProvider),
+              const SizedBox(height: AppSizes.xxxl),
+            ],
+          ),
         ),
       ),
     );

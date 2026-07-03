@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_icons.dart';
 import '../../core/constants/app_text.dart';
@@ -7,6 +8,7 @@ import '../../core/constants/app_sizes.dart';
 import '../../core/constants/app_radius.dart';
 import '../../core/constants/app_duration.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../providers/thoughts_provider.dart';
 
 class ThoughtsPage extends StatefulWidget {
   const ThoughtsPage({super.key});
@@ -17,7 +19,6 @@ class ThoughtsPage extends StatefulWidget {
 
 class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderStateMixin {
   final _searchController = TextEditingController();
-  String _selectedCategory = AppText.catAll;
 
   final List<String> _categories = [
     AppText.catAll,
@@ -26,32 +27,6 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
     AppText.catReflections,
     AppText.catDreams
   ];
-  
-  final List<Map<String, String>> _thoughts = [
-    {
-      'title': 'Cerebral Database Architecture',
-      'category': AppText.catIdeas,
-      'time': '10 min ago',
-      'content': 'We need a multi-tenant layout mapped with standard partition keys inside Supabase table metadata.',
-      'color': '0xFF6C63FF',
-    },
-    {
-      'title': 'Weekly Action Items',
-      'category': AppText.catTasks,
-      'time': '2 hours ago',
-      'content': 'Finish refactoring the theme layout configurations, configure MultiProvider binding rules.',
-      'color': '0xFF5EA8FF',
-    },
-    {
-      'title': 'Reflective Journaling Session',
-      'category': AppText.catReflections,
-      'time': '1 day ago',
-      'content': 'Focusing on incremental milestones reduces anxiety and helps track daily progress metrics.',
-      'color': '0xFF9D97FF',
-    },
-  ];
-
-  List<Map<String, String>> _filteredThoughts = [];
 
   late final AnimationController _cardEntranceController;
   late final Animation<double> _fadeAnimation;
@@ -60,7 +35,6 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
-    _filteredThoughts = List.from(_thoughts);
 
     _cardEntranceController = AnimationController(
       vsync: this,
@@ -92,41 +66,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
   }
 
   void _onSearchChanged() {
-    _filterThoughts();
-  }
-
-  void _filterThoughts() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredThoughts = _thoughts.where((thought) {
-        final matchesSearch = thought['title']!.toLowerCase().contains(query) ||
-            thought['content']!.toLowerCase().contains(query);
-        final matchesCategory = _selectedCategory == AppText.catAll || thought['category'] == _selectedCategory;
-        return matchesSearch && matchesCategory;
-      }).toList();
-    });
-  }
-
-  void _addThought(String title, String category, String content) {
-    if (title.isEmpty || content.isEmpty) return;
-    setState(() {
-      String hexColor = '0xFF6C63FF';
-      if (category == AppText.catIdeas) hexColor = '0xFF6C63FF';
-      if (category == AppText.catTasks) hexColor = '0xFF5EA8FF';
-      if (category == AppText.catReflections) hexColor = '0xFF9D97FF';
-      if (category == AppText.catDreams) hexColor = '0xFFFF7597';
-
-      _thoughts.insert(0, {
-        'title': title,
-        'category': category,
-        'time': AppText.timeJustNow,
-        'content': content,
-        'color': hexColor,
-      });
-      _filterThoughts();
-    });
-    _cardEntranceController.reset();
-    _cardEntranceController.forward();
+    context.read<ThoughtsProvider>().setSearchQuery(_searchController.text);
   }
 
   void _showAddThoughtSheet() {
@@ -268,12 +208,14 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                           GestureDetector(
                             onTap: () {
                               if (formKey.currentState!.validate()) {
-                                _addThought(
-                                  titleController.text,
-                                  localCategory,
-                                  contentController.text,
+                                context.read<ThoughtsProvider>().addThought(
+                                  title: titleController.text,
+                                  category: localCategory,
+                                  content: contentController.text,
                                 );
                                 Navigator.pop(context);
+                                _cardEntranceController.reset();
+                                _cardEntranceController.forward();
                               }
                             },
                             child: Container(
@@ -313,6 +255,9 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    final thoughtsProvider = context.watch<ThoughtsProvider>();
+    final filteredThoughts = thoughtsProvider.filteredThoughts;
+
     return Scaffold(
       backgroundColor: AppColors.transparent,
       body: Stack(
@@ -383,15 +328,15 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                           physics: const BouncingScrollPhysics(),
                           itemBuilder: (context, index) {
                             final cat = _categories[index];
-                            final isSel = _selectedCategory == cat;
+                            final isSel = thoughtsProvider.selectedCategory == cat;
                             return Padding(
                               padding: const EdgeInsets.only(right: AppSizes.sm),
                               child: ChoiceChip(
                                 label: Text(
                                   cat,
-                                  style: TextStyle(
-                                    color: isSel ? AppColors.white : AppColors.white,
-                                    fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
+                                  style: const TextStyle(
+                                    color: AppColors.white,
+                                    fontWeight: FontWeight.normal,
                                   ),
                                 ),
                                 selected: isSel,
@@ -406,10 +351,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                                 ),
                                 onSelected: (selected) {
                                   if (selected) {
-                                    setState(() {
-                                      _selectedCategory = cat;
-                                      _filterThoughts();
-                                    });
+                                    thoughtsProvider.setSelectedCategory(cat);
                                   }
                                 },
                               ),
@@ -425,7 +367,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
               const SliverToBoxAdapter(child: SizedBox(height: AppSizes.xxxl)),
 
               // Grid items list
-              if (_filteredThoughts.isEmpty)
+              if (filteredThoughts.isEmpty)
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl, vertical: AppSizes.absolute),
@@ -452,7 +394,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                        final thought = _filteredThoughts[index];
+                        final thought = filteredThoughts[index];
                         final colorVal = int.parse(thought['color']!);
                         final primaryColor = Color(colorVal);
 
@@ -517,7 +459,7 @@ class _ThoughtsPageState extends State<ThoughtsPage> with SingleTickerProviderSt
                           ),
                         );
                       },
-                      childCount: _filteredThoughts.length,
+                      childCount: filteredThoughts.length,
                     ),
                   ),
                 ),

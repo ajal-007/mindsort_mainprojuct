@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_icons.dart';
 import '../../core/constants/app_text.dart';
@@ -6,6 +7,7 @@ import '../../core/constants/app_sizes.dart';
 import '../../core/constants/app_radius.dart';
 import '../../core/constants/app_duration.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../providers/dashboard_provider.dart';
 
 class Insight extends StatefulWidget {
   const Insight({super.key});
@@ -15,35 +17,19 @@ class Insight extends StatefulWidget {
 }
 
 class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
-  late final AnimationController _progressController;
-  late final Animation<double> _clarityPercentage;
-
-  @override
-  void initState() {
-    super.initState();
-    _progressController = AnimationController(
-      vsync: this,
-      duration: AppDuration.insightEntrance,
-    );
-
-    _clarityPercentage = Tween<double>(begin: 0, end: 78).animate(
-      CurvedAnimation(
-        parent: _progressController,
-        curve: Curves.easeOutCubic,
-      ),
-    );
-
-    _progressController.forward();
-  }
-
-  @override
-  void dispose() {
-    _progressController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final dashboardProvider = context.watch<DashboardProvider>();
+
+    if (dashboardProvider.isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.transparent,
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primaryAccent),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.transparent,
       body: SafeArea(
@@ -64,13 +50,13 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
               ),
               const SizedBox(height: AppSizes.giant),
 
-              _buildClarityOverviewCard(),
+              _buildClarityOverviewCard(dashboardProvider),
               const SizedBox(height: AppSizes.xxxl),
               
-              _buildFocusGraphCard(),
+              _buildFocusGraphCard(dashboardProvider),
               const SizedBox(height: AppSizes.xxxl),
 
-              _buildMetricsGrid(),
+              _buildMetricsGrid(dashboardProvider),
               const SizedBox(height: AppSizes.xxxl),
 
               const Text(
@@ -78,18 +64,20 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
                 style: AppTextStyles.insightSectionTitle,
               ),
               const SizedBox(height: AppSizes.md),
-              _buildAdviceCard(
-                title: AppText.advicePeakTitle,
-                desc: AppText.advicePeakDesc,
-                icon: AppIcons.twilight,
-                color: AppColors.secondaryAccent,
-              ),
-              const SizedBox(height: AppSizes.md),
-              _buildAdviceCard(
-                title: AppText.adviceDeficitTitle,
-                desc: AppText.adviceDeficitDesc,
-                icon: AppIcons.psychology,
-                color: AppColors.primaryAccent,
+
+              Column(
+                children: dashboardProvider.adviceCards.map((card) {
+                  final isPeak = card['type'] == 'peak';
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: AppSizes.md),
+                    child: _buildAdviceCard(
+                      title: card['title']!,
+                      desc: card['desc']!,
+                      icon: isPeak ? AppIcons.twilight : AppIcons.psychology,
+                      color: isPeak ? AppColors.secondaryAccent : AppColors.primaryAccent,
+                    ),
+                  );
+                }).toList(),
               ),
               const SizedBox(height: AppSizes.xxxl),
             ],
@@ -99,7 +87,7 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _buildClarityOverviewCard() {
+  Widget _buildClarityOverviewCard(DashboardProvider provider) {
     return Container(
       padding: const EdgeInsets.all(AppSizes.xxxl),
       decoration: BoxDecoration(
@@ -111,9 +99,11 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
       ),
       child: Row(
         children: [
-          AnimatedBuilder(
-            animation: _clarityPercentage,
-            builder: (context, _) {
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0, end: provider.clarityPercentage.toDouble()),
+            duration: AppDuration.insightEntrance,
+            curve: Curves.easeOutCubic,
+            builder: (context, clarityValue, _) {
               return Stack(
                 alignment: Alignment.center,
                 children: [
@@ -122,7 +112,7 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
                     height: 90,
                     child: CustomPaint(
                       painter: _ClarityRingPainter(
-                        percentage: _clarityPercentage.value,
+                        percentage: clarityValue,
                         ringColor: AppColors.primaryAccent,
                         trackColor: AppColors.white.withOpacity(0.05),
                       ),
@@ -132,7 +122,7 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '${_clarityPercentage.value.toInt()}%',
+                        '${clarityValue.toInt()}%',
                         style: AppTextStyles.insightClarityVal,
                       ),
                       Text(
@@ -167,7 +157,7 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _buildFocusGraphCard() {
+  Widget _buildFocusGraphCard(DashboardProvider provider) {
     return Container(
       padding: const EdgeInsets.all(AppSizes.xxxl),
       decoration: BoxDecoration(
@@ -186,13 +176,13 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    AppText.weeklyFocusTitle,
+                  Text(
+                    provider.focusMetrics['title'] ?? AppText.weeklyFocusTitle,
                     style: AppTextStyles.insightFocusTitle,
                   ),
                   const SizedBox(height: AppSizes.xxs),
                   Text(
-                    AppText.avgDeepWorkSub,
+                    provider.focusMetrics['sub'] ?? AppText.avgDeepWorkSub,
                     style: AppTextStyles.insightFocusSub,
                   ),
                 ],
@@ -203,8 +193,8 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
                   color: AppColors.secondaryAccent.withOpacity(0.12),
                   borderRadius: AppRadius.r8,
                 ),
-                child: const Text(
-                  AppText.weeklyFocusGrowth,
+                child: Text(
+                  provider.focusMetrics['growth'] ?? AppText.weeklyFocusGrowth,
                   style: AppTextStyles.insightFocusPercent,
                 ),
               ),
@@ -241,7 +231,7 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _buildMetricsGrid() {
+  Widget _buildMetricsGrid(DashboardProvider provider) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final double cardWidth = (constraints.maxWidth - 16) / 2;
@@ -251,17 +241,17 @@ class _InsightState extends State<Insight> with SingleTickerProviderStateMixin {
           children: [
             _buildMetricTile(
               width: cardWidth,
-              title: AppText.streakTitle,
-              value: AppText.streakValue,
-              sub: AppText.streakSub,
+              title: provider.streakMetrics['title'] ?? AppText.streakTitle,
+              value: provider.streakMetrics['value'] ?? AppText.streakValue,
+              sub: provider.streakMetrics['sub'] ?? AppText.streakSub,
               icon: AppIcons.fire,
               color: AppColors.orangeAccent,
             ),
             _buildMetricTile(
               width: cardWidth,
-              title: AppText.structuredTitle,
-              value: AppText.structuredValue,
-              sub: AppText.structuredSub,
+              title: provider.structuredMetrics['title'] ?? AppText.structuredTitle,
+              value: provider.structuredMetrics['value'] ?? AppText.structuredValue,
+              sub: provider.structuredMetrics['sub'] ?? AppText.structuredSub,
               icon: AppIcons.rule,
               color: AppColors.secondaryAccent,
             ),

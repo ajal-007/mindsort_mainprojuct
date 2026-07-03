@@ -10,6 +10,7 @@ import '../../core/theme/app_text_styles.dart';
 import '../../shared/widgets/cyber_grid_painter.dart';
 import '../../shared/widgets/glowing_orb.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/profile_provider.dart';
 import '../thoughts/thoughts_page.dart';
 import '../assessment/ai_coach.dart';
 import 'insight.dart';
@@ -60,6 +61,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _orbFloat = Tween<double>(begin: -15, end: 15).animate(
       CurvedAnimation(parent: _orbController, curve: Curves.easeInOut),
     );
+
+    final userId = context.read<AuthProvider>().getCurrentUser()?.id ?? '';
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    Future.microtask(() => profileProvider.loadUserProfile(userId));
   }
 
   @override
@@ -137,7 +142,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildHomeBody(BuildContext context) {
+    final profileProvider = context.watch<ProfileProvider>();
     final authProvider = context.read<AuthProvider>();
+
+    if (profileProvider.isLoading && profileProvider.profileData == null) {
+      return _buildLoadingState();
+    }
+
+    final profile = profileProvider.profileData;
+    final username = profile?[AppText.usernameLabel.toLowerCase()] ?? AppText.defaultExplorer;
+    final email = profile?[AppText.emailAddressLabel.toLowerCase()] ?? authProvider.getCurrentUser()?.email ?? '';
 
     return Center(
       child: SingleChildScrollView(
@@ -145,27 +159,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl, vertical: AppSizes.huge),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 540),
-          child: FutureBuilder<Map<String, dynamic>?>(
-            future: authProvider.getProfile(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return _buildLoadingState();
-              }
-
-              final profile = snapshot.data;
-              final username = profile?[AppText.usernameLabel.toLowerCase()] ?? AppText.defaultExplorer;
-              final email = profile?[AppText.emailAddressLabel.toLowerCase()] ?? authProvider.getCurrentUser()?.email ?? '';
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildHeaderSection(username, email),
-                  const SizedBox(height: AppSizes.huge),
-                  _buildDashboardCard(),
-                  const SizedBox(height: AppSizes.huge),
-                ],
-              );
-            },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildHeaderSection(username, email),
+              const SizedBox(height: AppSizes.huge),
+              _buildDashboardCard(),
+              const SizedBox(height: AppSizes.huge),
+            ],
           ),
         ),
       ),

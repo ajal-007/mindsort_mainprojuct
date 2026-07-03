@@ -5,6 +5,10 @@ import 'core/constants/app_api.dart';
 import 'core/theme/app_theme.dart';
 import 'features/authentication/auth_gate.dart';
 import 'providers/auth_provider.dart';
+import 'providers/thoughts_provider.dart';
+import 'providers/assessment_provider.dart';
+import 'providers/dashboard_provider.dart';
+import 'providers/profile_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,8 +19,14 @@ Future<void> main() async {
   );
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => AuthProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ThoughtsProvider()),
+        ChangeNotifierProvider(create: (_) => AssessmentProvider()),
+        ChangeNotifierProvider(create: (_) => DashboardProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
+      ],
       child: const MyApp(),
     ),
   );

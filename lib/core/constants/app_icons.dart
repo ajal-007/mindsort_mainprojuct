@@ -23,4 +23,5 @@ class AppIcons {
   static const syncIcon = Icons.sync_rounded;
   static const chevronRight = Icons.chevron_right_rounded;
   static const logout = Icons.logout_rounded;
+  static const challenges = Icons.track_changes_rounded;
 }

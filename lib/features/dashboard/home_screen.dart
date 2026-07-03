@@ -11,10 +11,10 @@ import '../../shared/widgets/cyber_grid_painter.dart';
 import '../../shared/widgets/glowing_orb.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/profile_provider.dart';
-import '../thoughts/thoughts_page.dart';
 import '../assessment/ai_coach.dart';
 import 'insight.dart';
 import '../profile/profile.dart';
+import '../daily_challenges/presentation/screens/daily_challenges_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -78,9 +78,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       _buildHomeBody(context),
-      const ThoughtsPage(),
-      const AICoach(),
       const Insight(),
+      const AICoach(),
+      const DailyChallengesScreen(),
       const Profile(),
     ];
 
@@ -354,16 +354,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             label: AppText.homeLabel,
           ),
           BottomNavigationBarItem(
-            icon: Icon(AppIcons.psychology),
-            label: AppText.thoughtsLabel,
+            icon: Icon(AppIcons.insight),
+            label: AppText.insightLabel,
           ),
           BottomNavigationBarItem(
             icon: Icon(AppIcons.coach),
             label: AppText.coachLabel,
           ),
           BottomNavigationBarItem(
-            icon: Icon(AppIcons.insight),
-            label: AppText.insightLabel,
+            icon: Icon(AppIcons.challenges),
+            label: AppText.challengesLabel,
           ),
           BottomNavigationBarItem(
             icon: Icon(AppIcons.person),

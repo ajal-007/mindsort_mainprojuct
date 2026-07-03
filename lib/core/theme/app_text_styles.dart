@@ -277,61 +277,11 @@ class AppTextStyles {
     fontWeight: AppFontWeights.medium,
   );
 
-  // Thoughts Page
-  static const thoughtsTitle = TextStyle(
-    color: AppColors.white,
-    fontSize: AppFontSizes.displayMedium,
-    fontWeight: AppFontWeights.bold,
-    letterSpacing: -0.5,
-  );
-
-  static final thoughtsSub = TextStyle(
-    color: AppColors.white.withOpacity(0.5),
-    fontSize: AppFontSizes.bodyMedium,
-  );
-
-  static final thoughtsSearchHint = TextStyle(
-    color: AppColors.white.withOpacity(0.3),
-    fontSize: AppFontSizes.bodyMedium,
-  );
-
-  static const thoughtsEmptyTitle = TextStyle(
-    color: AppColors.white,
-    fontSize: AppFontSizes.bodyLarge,
-    fontWeight: AppFontWeights.semiBold,
-  );
-
-  static const thoughtsCardTitle = TextStyle(
-    color: AppColors.white,
-    fontSize: AppFontSizes.titleSmall,
-    fontWeight: AppFontWeights.bold,
-  );
-
-  static final thoughtsCardContent = TextStyle(
-    color: AppColors.white.withOpacity(0.65),
-    fontSize: AppFontSizes.body,
-    height: 1.45,
-  );
-
-  static final thoughtsCardTime = TextStyle(
-    color: AppColors.white.withOpacity(0.35),
-    fontSize: AppFontSizes.captionLarge,
-  );
-
-  static const thoughtsSheetTitle = TextStyle(
+  static const dialogTitle = TextStyle(
     color: AppColors.white,
     fontSize: AppFontSizes.titleLarge,
     fontWeight: AppFontWeights.bold,
     letterSpacing: -0.5,
-  );
-
-  static const thoughtsSheetInput = TextStyle(color: AppColors.white);
-  static final thoughtsSheetInputHint = TextStyle(color: AppColors.white.withOpacity(0.3));
-
-  static const thoughtsSheetSubmit = TextStyle(
-    color: AppColors.white,
-    fontSize: AppFontSizes.bodyLarge,
-    fontWeight: AppFontWeights.bold,
   );
 
   // AI Coach Page

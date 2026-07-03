@@ -51,29 +51,12 @@ class AppText {
   static const workspaceDesc = 'Welcome to your command center. Your mind’s chaos is transformed here into clear actions. Start organizing, brainstorming, and letting the assistant structure your thoughts.';
   static const cloudSyncActive = 'Cloud Sync: Secured & Active';
   static const homeLabel = 'Home';
-  static const thoughtsLabel = 'Thoughts';
   static const coachLabel = 'Coach';
   static const insightLabel = 'Insight';
   static const profileLabel = 'Profile';
+  static const challengesLabel = 'Challenges';
   static const loadingWorkspace = 'Loading Workspace...';
-
-  // Thoughts Page
-  static const catAll = 'All';
-  static const catIdeas = 'Ideas';
-  static const catTasks = 'Tasks';
-  static const catReflections = 'Reflections';
-  static const catDreams = 'Dreams';
   static const timeJustNow = 'Just now';
-  static const captureThought = 'Capture Thought';
-  static const thoughtTitleHint = 'Thought title...';
-  static const enterTitleValidator = 'Please enter a title';
-  static const pourThoughtsHint = 'Pour thoughts...';
-  static const emptyThoughtValidator = 'Cannot save empty thought';
-  static const storeThought = 'Store Thought';
-  static const mindSpace = 'Mind Space';
-  static const manageMentalModels = 'Manage your recorded mental models';
-  static const searchThoughtsHint = 'Search logged thoughts...';
-  static const noRecordsFound = 'No records found';
 
   // AI Coach Page
   static const coachHello = 'Hello! I am your MindSort AI Coach. What is currently occupying your mind? We can organize your thoughts, explore ideas, or find steps to destress.';

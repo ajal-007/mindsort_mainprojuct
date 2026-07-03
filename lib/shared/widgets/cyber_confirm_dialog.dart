@@ -33,7 +33,7 @@ class CyberConfirmDialog extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: AppTextStyles.thoughtsSheetTitle,
+          style: AppTextStyles.dialogTitle,
           textAlign: TextAlign.center,
         ),
         content: Text(

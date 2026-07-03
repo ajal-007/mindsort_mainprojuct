@@ -58,4 +58,10 @@ class AppColors {
   static const red = Colors.red;
   
   static const dreamCategory = Color(0xFFFF7597);
+
+  // Daily Challenges Colors
+  static const challengesBackground = Color(0xFF050816);
+  static const electricCyan = Color(0xFF00E5FF);
+  static const challengePurple = Color(0xFF8B5CF6);
+  static const challengeBlue = Color(0xFF3B82F6);
 }

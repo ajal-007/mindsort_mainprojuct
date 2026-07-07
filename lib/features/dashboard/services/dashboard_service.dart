@@ -1,4 +1,4 @@
-import '../../core/constants/app_text.dart';
+import '../../../../core/constants/app_text.dart';
 
 class DashboardService {
   Future<int> fetchClarityPercentage() async {

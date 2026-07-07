@@ -1,6 +1,6 @@
-import '../../core/constants/app_text.dart';
+import '../../../core/constants/app_text.dart';
 
-class AssessmentService {
+class AiService {
   final List<Map<String, dynamic>> _messages = [
     {
       'sender': 'coach',

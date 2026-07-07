@@ -8,7 +8,7 @@ import '../../core/constants/app_sizes.dart';
 import '../../core/constants/app_radius.dart';
 import '../../core/constants/app_duration.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../providers/assessment_provider.dart';
+import 'ai_provider.dart';
 
 class AICoach extends StatefulWidget {
   const AICoach({super.key});
@@ -71,12 +71,12 @@ class _AICoachState extends State<AICoach> with SingleTickerProviderStateMixin {
     if (text.trim().isEmpty) return;
     final msg = text;
     _messageController.clear();
-    context.read<AssessmentProvider>().sendMessage(msg, onResponseReceived: _scrollToBottom);
+    context.read<AiProvider>().sendMessage(msg, onResponseReceived: _scrollToBottom);
   }
 
   @override
   Widget build(BuildContext context) {
-    final assessmentProvider = context.watch<AssessmentProvider>();
+    final assessmentProvider = context.watch<AiProvider>();
     final messages = assessmentProvider.messages;
     final isTyping = assessmentProvider.isTyping;
 

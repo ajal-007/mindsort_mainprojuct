@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../core/constants/app_duration.dart';
-import '../core/constants/app_text.dart';
-import '../repositories/assessment_repository.dart';
+import '../../core/constants/app_duration.dart';
+import '../../core/constants/app_text.dart';
+import 'ai_repository.dart';
 
-class AssessmentProvider extends ChangeNotifier {
-  final AssessmentRepository _assessmentRepository = AssessmentRepository();
+class AiProvider extends ChangeNotifier {
+  final  _aiRepository = AiRepository();
 
   List<Map<String, dynamic>> _messages = [];
   List<Map<String, dynamic>> get messages => _messages;
@@ -13,12 +13,12 @@ class AssessmentProvider extends ChangeNotifier {
   bool _isTyping = false;
   bool get isTyping => _isTyping;
 
-  AssessmentProvider() {
+  AiProvider() {
     loadMessages();
   }
 
   Future<void> loadMessages() async {
-    _messages = await _assessmentRepository.fetchMessages();
+    _messages = await _aiRepository.fetchMessages();
     notifyListeners();
   }
 
@@ -31,7 +31,7 @@ class AssessmentProvider extends ChangeNotifier {
       'time': AppText.timeJustNow,
     };
 
-    await _assessmentRepository.addMessage(userMessage);
+    await _aiRepository.addMessage(userMessage);
     _messages.add(userMessage);
     _isTyping = true;
     notifyListeners();
@@ -39,14 +39,14 @@ class AssessmentProvider extends ChangeNotifier {
     onResponseReceived();
 
     Future.delayed(AppDuration.coachResponseDelay, () async {
-      final responseText = await _assessmentRepository.simulateCoachResponse(text);
+      final responseText = await _aiRepository.simulateCoachResponse(text);
       final coachMessage = {
         'sender': 'coach',
         'text': responseText,
         'time': AppText.timeJustNow,
       };
 
-      await _assessmentRepository.addMessage(coachMessage);
+      await _aiRepository.addMessage(coachMessage);
       _messages.add(coachMessage);
       _isTyping = false;
       notifyListeners();

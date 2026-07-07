@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:mainsupabase_projuct/features/assessment/assasment_screen.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_icons.dart';
@@ -10,8 +11,7 @@ import '../../core/constants/app_duration.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../shared/widgets/cyber_grid_painter.dart';
 import '../../shared/widgets/glowing_orb.dart';
-import '../../providers/auth_provider.dart';
-import '../dashboard/home_screen.dart';
+import 'provider/auth_provider.dart';
 
 class CompleteProfileScreen extends StatefulWidget {
   const CompleteProfileScreen({super.key});
@@ -116,7 +116,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen>
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (_) => const HomeScreen(),
+          builder: (_) => const AssasmentScreen(),
         ),
         (route) => false,
       );

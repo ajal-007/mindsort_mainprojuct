@@ -6,10 +6,10 @@ import '../../core/constants/app_text.dart';
 import '../../core/constants/app_sizes.dart';
 import '../../core/constants/app_radius.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../providers/auth_provider.dart';
-import '../../providers/profile_provider.dart';
+import '../authentication/provider/auth_provider.dart';
+import 'providers/profile_provider.dart';
 import '../../shared/widgets/cyber_confirm_dialog.dart';
-import '../authentication/login_page.dart';
+
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -25,7 +25,10 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
     final userId = context.read<AuthProvider>().getCurrentUser()?.id ?? '';
-    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final profileProvider = Provider.of<ProfileProvider>(
+      context,
+      listen: false,
+    );
     Future.microtask(() => profileProvider.loadUserProfile(userId));
   }
 
@@ -46,8 +49,13 @@ class _ProfileState extends State<Profile> {
     }
 
     final profile = profileProvider.profileData;
-    final username = profile?[AppText.usernameLabel.toLowerCase()] ?? AppText.defaultExplorer;
-    final email = profile?[AppText.emailAddressLabel.toLowerCase()] ?? authProvider.getCurrentUser()?.email ?? 'anonymous@mindsort.ai';
+    final username =
+        profile?[AppText.usernameLabel.toLowerCase()] ??
+        AppText.defaultExplorer;
+    final email =
+        profile?[AppText.emailAddressLabel.toLowerCase()] ??
+        authProvider.getCurrentUser()?.email ??
+        'anonymous@mindsort.ai';
     final initial = username.isNotEmpty ? username[0].toUpperCase() : 'E';
 
     return Scaffold(
@@ -55,7 +63,10 @@ class _ProfileState extends State<Profile> {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxxl, vertical: AppSizes.giant),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSizes.xxxl,
+            vertical: AppSizes.giant,
+          ),
           child: Column(
             children: [
               _buildHeaderCard(username, email, initial),
@@ -77,7 +88,7 @@ class _ProfileState extends State<Profile> {
                 onTap: () {},
               ),
               const SizedBox(height: AppSizes.md),
-              
+
               _buildSettingsTile(
                 icon: AppIcons.lock,
                 title: AppText.securityKeysTitle,
@@ -85,14 +96,17 @@ class _ProfileState extends State<Profile> {
                 onTap: () {},
               ),
               const SizedBox(height: AppSizes.md),
-              
+
               _buildSettingsTile(
                 icon: AppIcons.syncIcon,
                 title: AppText.cloudSyncDbTitle,
                 subtitle: AppText.cloudSyncDbSub,
                 onTap: () {},
                 trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.msm, vertical: AppSizes.xs),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSizes.msm,
+                    vertical: AppSizes.xs,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.greenAccent.withOpacity(0.12),
                     borderRadius: AppRadius.r8,
@@ -121,9 +135,7 @@ class _ProfileState extends State<Profile> {
       decoration: BoxDecoration(
         color: AppColors.white.withOpacity(0.04),
         borderRadius: AppRadius.r28,
-        border: Border.all(
-          color: AppColors.white.withOpacity(0.08),
-        ),
+        border: Border.all(color: AppColors.white.withOpacity(0.08)),
       ),
       child: Column(
         children: [
@@ -155,20 +167,14 @@ class _ProfileState extends State<Profile> {
             ),
           ),
           const SizedBox(height: AppSizes.xxl),
-          Text(
-            username,
-            style: AppTextStyles.profileUsername,
-          ),
+          Text(username, style: AppTextStyles.profileUsername),
           const SizedBox(height: AppSizes.sxs),
-          Text(
-            email,
-            style: AppTextStyles.profileEmail,
-          ),
+          Text(email, style: AppTextStyles.profileEmail),
           const SizedBox(height: AppSizes.xxxl),
-          
+
           Divider(color: AppColors.white.withOpacity(0.06), height: 1),
           const SizedBox(height: AppSizes.xxl),
-          
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -185,15 +191,9 @@ class _ProfileState extends State<Profile> {
   Widget _buildMiniStat(String val, String label) {
     return Column(
       children: [
-        Text(
-          val,
-          style: AppTextStyles.profileStatVal,
-        ),
+        Text(val, style: AppTextStyles.profileStatVal),
         const SizedBox(height: AppSizes.xs),
-        Text(
-          label,
-          style: AppTextStyles.profileStatLabel,
-        ),
+        Text(label, style: AppTextStyles.profileStatLabel),
       ],
     );
   }
@@ -208,13 +208,14 @@ class _ProfileState extends State<Profile> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxl, vertical: AppSizes.lg),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.xxl,
+          vertical: AppSizes.lg,
+        ),
         decoration: BoxDecoration(
           color: AppColors.white.withOpacity(0.03),
           borderRadius: AppRadius.r20,
-          border: Border.all(
-            color: AppColors.white.withOpacity(0.06),
-          ),
+          border: Border.all(color: AppColors.white.withOpacity(0.06)),
         ),
         child: Row(
           children: [
@@ -231,26 +232,27 @@ class _ProfileState extends State<Profile> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: AppTextStyles.profileTileTitle,
-                  ),
+                  Text(title, style: AppTextStyles.profileTileTitle),
                   const SizedBox(height: AppSizes.xs),
-                  Text(
-                    subtitle,
-                    style: AppTextStyles.profileTileSub,
-                  ),
+                  Text(subtitle, style: AppTextStyles.profileTileSub),
                 ],
               ),
             ),
-            trailing ?? Icon(AppIcons.chevronRight, color: AppColors.white.withOpacity(0.25)),
+            trailing ??
+                Icon(
+                  AppIcons.chevronRight,
+                  color: AppColors.white.withOpacity(0.25),
+                ),
           ],
         ),
       ),
     );
   }
 
-  void _showLogoutConfirmation(BuildContext context, AuthProvider authProvider) {
+  void _showLogoutConfirmation(
+    BuildContext context,
+    AuthProvider authProvider,
+  ) {
     showDialog(
       context: context,
       barrierColor: AppColors.black.withOpacity(0.6),
@@ -261,13 +263,9 @@ class _ProfileState extends State<Profile> {
           cancelLabel: AppText.cancelLabel,
           confirmLabel: AppText.logoutLabel,
           onConfirm: () async {
+            debugPrint("1. Logout pressed");
             await authProvider.signOut();
-            if (!context.mounted) return;
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => const LoginScreen()),
-              (route) => false,
-            );
+            debugPrint("2. Sign out finished");
           },
         );
       },
@@ -298,11 +296,7 @@ class _ProfileState extends State<Profile> {
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                AppIcons.logout,
-                color: AppColors.redAccent,
-                size: 20,
-              ),
+              Icon(AppIcons.logout, color: AppColors.redAccent, size: 20),
               SizedBox(width: AppSizes.msm),
               Text(
                 AppText.logoutSession,

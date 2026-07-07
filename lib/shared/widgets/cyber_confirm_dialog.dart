@@ -10,7 +10,7 @@ class CyberConfirmDialog extends StatelessWidget {
   final String content;
   final String cancelLabel;
   final String confirmLabel;
-  final VoidCallback onConfirm;
+  final Future<void> Function() onConfirm;
 
   const CyberConfirmDialog({
     super.key,
@@ -45,6 +45,7 @@ class CyberConfirmDialog extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
+            
             child: Text(
               cancelLabel,
               style: TextStyle(
@@ -55,8 +56,8 @@ class CyberConfirmDialog extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.pop(context); // Close dialog first
-              onConfirm();
+                Navigator.of(context).pop();
+               onConfirm();
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: AppSizes.xl, vertical: AppSizes.md),

@@ -7,7 +7,7 @@ import '../../core/constants/app_sizes.dart';
 import '../../core/constants/app_radius.dart';
 import '../../core/constants/app_duration.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../providers/auth_provider.dart';
+import 'provider/auth_provider.dart';
 import 'otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {

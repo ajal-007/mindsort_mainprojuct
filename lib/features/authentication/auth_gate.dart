@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:mainsupabase_projuct/features/assessment/assasment_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth_destination.dart';
 import 'complete_profile_screen.dart';
 import '../dashboard/home_screen.dart';
 import 'login_page.dart';
-import '../../providers/auth_provider.dart';
+import 'provider/auth_provider.dart';
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -24,11 +25,17 @@ class _AuthGateState extends State<AuthGate> {
 
     final authProvider = context.read<AuthProvider>();
 
-    _authSubscription = authProvider.authStateChanges.listen(
-      (data) async {
-        await _navigate();
-      },
-    );
+   _authSubscription = authProvider.authStateChanges.listen(
+  (data) async {
+    final event = data.event;
+
+    if (event == AuthChangeEvent.signedIn ||
+        event == AuthChangeEvent.signedOut ||
+        event == AuthChangeEvent.initialSession) {
+      await _navigate();
+    }
+  },
+);
   }
 
   void _goTo(Widget page) {
@@ -48,19 +55,23 @@ class _AuthGateState extends State<AuthGate> {
 
     if (!mounted) return;
 
-    switch (destination) {
-      case AuthDestination.login:
-        _goTo(const LoginScreen());
-        break;
+   switch (destination) {
+  case AuthDestination.login:
+    _goTo(const LoginScreen());
+    break;
 
-      case AuthDestination.home:
-        _goTo(const HomeScreen());
-        break;
+  case AuthDestination.home:
+    _goTo(const HomeScreen());
+    break;
 
-      case AuthDestination.completeProfile:
-        _goTo(const CompleteProfileScreen());
-        break;
-    }
+  case AuthDestination.assessment:
+    _goTo(const AssasmentScreen());
+    break;
+
+  case AuthDestination.completeProfile:
+    _goTo(const CompleteProfileScreen());
+    break;
+}
   }
 
   @override

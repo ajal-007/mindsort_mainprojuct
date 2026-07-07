@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:mainsupabase_projuct/features/authentication/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../features/authentication/auth_destination.dart';
-import '../repositories/auth_repository.dart';
+import '../auth_destination.dart';
+import 'package:mainsupabase_projuct/main.dart';
+import 'package:mainsupabase_projuct/features/authentication/login_page.dart';
+
 
 class AuthProvider extends ChangeNotifier {
-  final AuthRepository _authRepository = AuthRepository();
+  final AuthService _authService = AuthService();
 
   bool isLoading = false;
   String? error;
+
+  AuthProvider() {
+    _authService.authStateChanges.listen((data) {
+      if (data.event == AuthChangeEvent.signedOut) {
+        navigatorKey.currentState?.pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (route) => false,
+        );
+      }
+    });
+  }
 
   Future<void> sendOtp(String email) async {
     try {
@@ -15,7 +29,7 @@ class AuthProvider extends ChangeNotifier {
       error = null;
       notifyListeners();
 
-      await _authRepository.sendOtp(email);
+      await _authService.sendOtp(email);
     } catch (e) {
       error = e.toString();
       rethrow;
@@ -34,12 +48,12 @@ class AuthProvider extends ChangeNotifier {
       error = null;
       notifyListeners();
 
-      await _authRepository.verifyOtp(
+      await _authService.verifyOtp(
         email: email,
         otp: otp,
       );
 
-      final exists = await _authRepository.profileExists();
+      final exists = await _authService.profileExists();
 
       return exists;
     } catch (e) {
@@ -57,7 +71,7 @@ class AuthProvider extends ChangeNotifier {
       error = null;
       notifyListeners();
 
-      return await _authRepository.profileExists();
+      return await _authService.profileExists();
     } catch (e) {
       error = e.toString();
       rethrow;
@@ -75,7 +89,7 @@ class AuthProvider extends ChangeNotifier {
       error = null;
       notifyListeners();
 
-      await _authRepository.createProfile(
+      await _authService.createProfile(
         username: username,
       );
     } catch (e) {
@@ -93,7 +107,7 @@ class AuthProvider extends ChangeNotifier {
       error = null;
       notifyListeners();
 
-      await _authRepository.signOut();
+      await _authService.signOut();
     } catch (e) {
       error = e.toString();
       rethrow;
@@ -109,7 +123,7 @@ class AuthProvider extends ChangeNotifier {
       error = null;
       notifyListeners();
 
-      await _authRepository.signInWithGoogle();
+      await _authService.signInWithGoogle();
     } catch (e) {
       error = e.toString();
       rethrow;
@@ -120,32 +134,38 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Stream<AuthState> get authStateChanges {
-    return _authRepository.authStateChanges;
+    return _authService.authStateChanges;
   }
 
   User? getCurrentUser() {
-    return _authRepository.getCurrentUser();
+    return _authService.getCurrentUser();
   }
 
   Future<AuthDestination> getDestination() async {
-    final user = getCurrentUser();
+  final user = getCurrentUser();
 
-    if (user == null) {
-      return AuthDestination.login;
-    }
+  if (user == null) {
+    return AuthDestination.login;
+  }
 
-    final exists = await _authRepository.profileExists();
 
-    if (exists) {
-      return AuthDestination.home;
-    }
 
+  final profile = await _authService.getProfile(user.id);
+
+  if (profile == null) {
     return AuthDestination.completeProfile;
   }
 
+  if (profile['assessment_completed'] == true) {
+    return AuthDestination.home;
+  }
+
+  return AuthDestination.assessment;
+}
+
   Future<void> resendOtp(String email) async {
     try {
-      await _authRepository.resendOtp(email);
+      await _authService.resendOtp(email);
     } on AuthException catch (e) {
       error = e.message;
       rethrow;
@@ -155,6 +175,6 @@ class AuthProvider extends ChangeNotifier {
   Future<Map<String, dynamic>?> getProfile() async {
     final user = getCurrentUser();
     if (user == null) return null;
-    return await _authRepository.getProfile(user.id);
+    return await _authService.getProfile(user.id);
   }
 }

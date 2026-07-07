@@ -10,7 +10,7 @@ import '../../core/constants/app_duration.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../dashboard/home_screen.dart';
 import 'login_page.dart';
-import '../../providers/auth_provider.dart';
+import 'provider/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

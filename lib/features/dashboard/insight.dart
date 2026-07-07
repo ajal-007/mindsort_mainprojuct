@@ -7,7 +7,7 @@ import '../../core/constants/app_sizes.dart';
 import '../../core/constants/app_radius.dart';
 import '../../core/constants/app_duration.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../providers/dashboard_provider.dart';
+import 'provider/dashboard_provider.dart';
 
 class Insight extends StatefulWidget {
   const Insight({super.key});

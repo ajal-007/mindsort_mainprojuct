@@ -44,18 +44,11 @@ class AppText {
   static const continueButton = 'Continue';
   static const changeUsernameLater = 'You can change your username later from Settings.';
 
-  // Dashboard / HomeScreen
   static const defaultExplorer = 'Explorer';
-  static const helloPrefix = 'Hello, ';
-  static const workspaceTitle = 'MindSort AI Workspace';
-  static const workspaceDesc = 'Welcome to your command center. Your mind’s chaos is transformed here into clear actions. Start organizing, brainstorming, and letting the assistant structure your thoughts.';
-  static const cloudSyncActive = 'Cloud Sync: Secured & Active';
   static const homeLabel = 'Home';
   static const coachLabel = 'Coach';
-  static const insightLabel = 'Insight';
   static const profileLabel = 'Profile';
   static const challengesLabel = 'Challenges';
-  static const loadingWorkspace = 'Loading Workspace...';
   static const timeJustNow = 'Just now';
 
   // AI Coach Page

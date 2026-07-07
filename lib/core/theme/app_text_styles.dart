@@ -231,52 +231,6 @@ class AppTextStyles {
     fontWeight: AppFontWeights.medium,
   );
 
-  // Home Screen
-  static const homeLoading = TextStyle(
-    color: AppColors.white,
-    fontSize: AppFontSizes.bodyMedium,
-    fontWeight: AppFontWeights.medium,
-  );
-
-  static const homeInitialText = TextStyle(
-    color: AppColors.white,
-    fontSize: AppFontSizes.displayXLarge,
-    fontWeight: AppFontWeights.bold,
-  );
-
-  static const homeHeaderTitle = TextStyle(
-    fontSize: AppFontSizes.displayMedium,
-    fontWeight: AppFontWeights.bold,
-    color: AppColors.white,
-    letterSpacing: -0.5,
-  );
-
-  static final homeHeaderEmail = TextStyle(
-    color: AppColors.white.withOpacity(0.38),
-    fontSize: AppFontSizes.body,
-    fontWeight: AppFontWeights.normal,
-    letterSpacing: 0.2,
-  );
-
-  static const homeDashboardTitle = TextStyle(
-    color: AppColors.white,
-    fontSize: AppFontSizes.titleSmall,
-    fontWeight: AppFontWeights.semiBold,
-  );
-
-  static final homeDashboardDesc = TextStyle(
-    color: AppColors.white.withOpacity(0.7),
-    fontSize: AppFontSizes.body,
-    height: 1.55,
-    fontWeight: AppFontWeights.normal,
-  );
-
-  static const homeDashboardSync = TextStyle(
-    color: AppColors.greenAccent,
-    fontSize: AppFontSizes.bodySmall,
-    fontWeight: AppFontWeights.medium,
-  );
-
   static const dialogTitle = TextStyle(
     color: AppColors.white,
     fontSize: AppFontSizes.titleLarge,

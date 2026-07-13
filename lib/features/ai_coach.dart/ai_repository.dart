@@ -14,4 +14,8 @@ class AiRepository {
   Future<String> simulateCoachResponse(String userText) async {
     return await _aiService.simulateCoachResponse(userText);
   }
+
+  void reset() {
+    _aiService.reset();
+  }
 }

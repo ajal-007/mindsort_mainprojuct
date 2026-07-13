@@ -17,6 +17,15 @@ class AiService {
     _messages.add(message);
   }
 
+  void reset() {
+    _messages.clear();
+    _messages.add({
+      'sender': 'coach',
+      'text': AppText.coachHello,
+      'time': '10:00 AM'
+    });
+  }
+
   Future<String> simulateCoachResponse(String userText) async {
     String response = "That sounds fascinating. Let's break that down into three actionable steps. How can we simplify the first hurdle you foresee?";
     

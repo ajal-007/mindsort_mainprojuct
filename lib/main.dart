@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mainsupabase_projuct/features/assessment/provider/assasment_provider.dart';
+import 'package:mainsupabase_projuct/features/dashboard/provider/ai_dashboard_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/constants/app_api.dart';
@@ -31,6 +32,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => DashboardProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => ChallengeProvider()),
+        ChangeNotifierProvider(create: (_) => AiDashboardProvider()),
       ],
       child: const MyApp(),
     ),

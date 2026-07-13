@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/constants/app_duration.dart';
 import '../../core/constants/app_text.dart';
 import 'ai_repository.dart';
 
 class AiProvider extends ChangeNotifier {
   final  _aiRepository = AiRepository();
+  StreamSubscription<AuthState>? _authSubscription;
 
   List<Map<String, dynamic>> _messages = [];
   List<Map<String, dynamic>> get messages => _messages;
@@ -14,6 +16,18 @@ class AiProvider extends ChangeNotifier {
   bool get isTyping => _isTyping;
 
   AiProvider() {
+    loadMessages();
+    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      if (data.event == AuthChangeEvent.signedOut) {
+        reset();
+      }
+    });
+  }
+
+  void reset() {
+    _aiRepository.reset();
+    _messages.clear();
+    _isTyping = false;
     loadMessages();
   }
 
@@ -53,5 +67,11 @@ class AiProvider extends ChangeNotifier {
 
       onResponseReceived();
     });
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
   }
 }

@@ -6,7 +6,7 @@ import '../../core/constants/app_duration.dart';
 import '../../shared/widgets/cyber_grid_painter.dart';
 import '../../shared/widgets/glowing_orb.dart';
 import '../ai_coach.dart/ai_coach_page.dart';
-import 'insight.dart';
+import 'mental_dashboard.dart';
 import '../profile/profile_page.dart';
 import '../daily_challenges/presentation/screens/daily_challenges_screen.dart';
 

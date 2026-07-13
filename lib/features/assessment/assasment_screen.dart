@@ -6,6 +6,8 @@ import 'package:mainsupabase_projuct/features/dashboard/home_screen.dart';
 import 'package:mainsupabase_projuct/features/assessment/models/mental_stage.dart';
 import 'package:mainsupabase_projuct/features/assessment/service/assasment_scoring.dart';
 import 'package:provider/provider.dart';
+import 'package:mainsupabase_projuct/features/dashboard/provider/dashboard_provider.dart';
+import 'package:mainsupabase_projuct/features/dashboard/provider/ai_dashboard_provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_fonts.dart';
 import '../../core/constants/app_icons.dart';
@@ -415,6 +417,9 @@ class _AssasmentScreenState extends State<AssasmentScreen> with TickerProviderSt
     );
 
     if (!context.mounted) return;
+
+    context.read<DashboardProvider>().loadDashboard();
+    context.read<AiDashboardProvider>().clearInsight();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

@@ -70,8 +70,8 @@ class AppText {
   static const adviceDeficitTitle = 'Brain-Dump Deficit';
   static const adviceDeficitDesc = 'You have logged 5 ideas but no general reflections this week. Spending 5 minutes journaling could alleviate mental strain.';
   static const clarityLabel = 'Clarity';
-  static const workspaceScoreTitle = 'Workspace Score';
-  static const workspaceScoreDesc = 'Your mind structure is stable. AI detected high cognitive flow and clear distinction between ideation and task logging.';
+  static const workspaceScoreTitle = 'Current Mental Stage';
+
   static const weeklyFocusTitle = 'Weekly Focus Level';
   static const avgDeepWorkSub = 'Avg. 8.2h deep work / day';
   static const weeklyFocusGrowth = '+12% vs last week';

@@ -11,7 +11,7 @@ import '../../core/theme/app_text_styles.dart';
 import '../../shared/widgets/cyber_grid_painter.dart';
 import '../../shared/widgets/glowing_orb.dart';
 import 'provider/auth_provider.dart';
-import '../dashboard/home_screen.dart';
+import '../../home_screen.dart';
 import 'complete_profile_screen.dart';
 
 class OtpScreen extends StatefulWidget {

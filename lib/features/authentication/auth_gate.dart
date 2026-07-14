@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth_destination.dart';
 import 'complete_profile_screen.dart';
-import '../dashboard/home_screen.dart';
+import '../../home_screen.dart';
 import 'login_page.dart';
 import 'provider/auth_provider.dart';
 

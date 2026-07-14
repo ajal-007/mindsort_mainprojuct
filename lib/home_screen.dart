@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
-import '../../core/constants/app_icons.dart';
-import '../../core/constants/app_text.dart';
-import '../../core/constants/app_duration.dart';
-import '../../shared/widgets/cyber_grid_painter.dart';
-import '../../shared/widgets/glowing_orb.dart';
-import '../ai_coach.dart/ai_coach_page.dart';
-import 'mental_dashboard.dart';
-import '../profile/profile_page.dart';
-import '../daily_challenges/presentation/screens/daily_challenges_screen.dart';
+import 'core/constants/app_colors.dart';
+import 'core/constants/app_icons.dart';
+import 'core/constants/app_text.dart';
+import 'core/constants/app_duration.dart';
+import 'shared/widgets/cyber_grid_painter.dart';
+import 'shared/widgets/glowing_orb.dart';
+import 'features/ai_coach.dart/ai_coach_page.dart';
+import 'features/dashboard/mental_dashboard.dart';
+import 'features/profile/profile_page.dart';
+import 'features/daily_challenges/presentation/screens/daily_challenges_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

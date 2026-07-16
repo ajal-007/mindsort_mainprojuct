@@ -13,29 +13,52 @@ class ChallengeRepository {
   Future<List<Challenge>> getTodayChallenges({
     required DashboardData dashboard,
   }) async {
-    final existing = await _service.fetchTodayChallenges();
+    final currentDay = await getCurrentDay();
+    return await getChallengesForDay(day: currentDay, dashboard: dashboard);
+  }
+
+  Future<List<Challenge>> getChallengesForDay({
+    required int day,
+    required DashboardData dashboard,
+  }) async {
+    final existing = await _service.fetchChallengesForDay(day);
 
     if (existing.isNotEmpty) {
       return existing;
     }
 
-    // No challenges -> Generate using AI
+    // Only generate using AI if it's the current active day
     final currentDay = await _service.getCurrentDay();
+    if (day == currentDay) {
+      final difficulty = ChallengeDifficultyService.getDifficulty(currentDay);
+      final aiResponse = await _aiService.generateChallenges(
+        dashboard: dashboard,
+        currentDay: currentDay,
+        difficulty: difficulty.title,
+      );
 
-    final difficulty = ChallengeDifficultyService.getDifficulty(currentDay);
-    final aiResponse = await _aiService.generateChallenges(
-      dashboard: dashboard,
-      currentDay: currentDay,
-      difficulty: difficulty.title,
-    );
+      // Save to database
+      await _service.saveTodayChallenges(
+        currentDay: currentDay,
+        challenges: aiResponse.challenges,
+      );
 
-    // Save to database
-    await _service.saveTodayChallenges(
-      currentDay: currentDay,
-      challenges: aiResponse.challenges,
-    );
+      // Return newly saved challenges
+      return await _service.fetchChallengesForDay(currentDay);
+    }
 
-    // Return newly saved challenges
-    return await _service.fetchTodayChallenges();
+    return [];
+  }
+
+  Future<int> getCurrentDay() async {
+    return await _service.getCurrentDay();
+  }
+
+  Future<void> completeChallenge(Challenge challenge, bool completed) async {
+    await _service.updateChallengeCompletion(challenge.id, completed);
+  }
+
+  Future<void> advanceDay(int nextDay) async {
+    await _service.updateCurrentDay(nextDay);
   }
 }

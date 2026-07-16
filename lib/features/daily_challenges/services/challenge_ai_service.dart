@@ -29,6 +29,10 @@ class ChallengeAIService {
       throw Exception('Failed to generate challenges.');
     }
 
-    return AIChallengeResponse.fromJson(response.data);
+    final data = Map<String, dynamic>.from(response.data);
+    data['difficulty'] = difficulty;
+    data['currentDay'] = currentDay;
+
+    return AIChallengeResponse.fromJson(data);
   }
 }

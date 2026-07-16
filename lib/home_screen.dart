@@ -8,7 +8,7 @@ import 'shared/widgets/glowing_orb.dart';
 import 'features/ai_coach.dart/ai_coach_page.dart';
 import 'features/dashboard/mental_dashboard.dart';
 import 'features/profile/profile_page.dart';
-import 'features/daily_challenges/presentation/screens/daily_challenges_screen.dart';
+import 'features/daily_challenges/presentation/screens/journey_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       const Insight(),
-      const DailyChallengesScreen(),
+      const JourneyScreen(),
       const AICoach(),
       const Profile(),
     ];

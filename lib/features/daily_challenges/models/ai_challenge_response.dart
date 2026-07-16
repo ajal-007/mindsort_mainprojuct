@@ -12,12 +12,27 @@ class AIChallengeResponse {
   factory AIChallengeResponse.fromJson(
     Map<String, dynamic> json,
   ) {
+    final challengesList = json['challenges'] as List?;
+    final difficulty = json['difficulty'] as String?;
+    final currentDay = json['currentDay'] as int?;
+
+    final List<Challenge> parsedChallenges = [];
+    if (challengesList != null) {
+      for (int i = 0; i < challengesList.length; i++) {
+        final item = Map<String, dynamic>.from(challengesList[i]);
+        item['challenge_number'] ??= i + 1;
+        if (difficulty != null) {
+          item['difficulty'] ??= difficulty;
+        }
+        if (currentDay != null) {
+          item['challenge_day'] ??= currentDay;
+        }
+        parsedChallenges.add(Challenge.fromJson(item));
+      }
+    }
+
     return AIChallengeResponse(
-      challenges: (json['challenges'] as List)
-          .map(
-            (e) => Challenge.fromJson(e),
-          )
-          .toList(),
+      challenges: parsedChallenges,
     );
   }
 }

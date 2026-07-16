@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import OpenAI from "npm:openai";
 
 import { ChallengeResponse } from "./types.ts";
 

@@ -30,14 +30,15 @@ class Challenge {
 
   factory Challenge.fromJson(Map<String, dynamic> json) {
     return Challenge(
-      id: json['id'],
-      day: json['challenge_day'],
-      challengeNumber: json['challenge_number'],
-      title: json['title'],
-      description: json['description'],
-      estimatedMinutes: json['estimated_minutes'],
+      id: json['id'] ?? '',
+      day: json['challenge_day'] ?? 1,
+      challengeNumber: json['challenge_number'] ?? 0,
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      estimatedMinutes: json['estimated_minutes'] ?? json['estimatedMinutes'] ?? 5,
       difficulty: ChallengeDifficulty.values.firstWhere(
         (e) => e.name == json['difficulty'],
+        orElse: () => ChallengeDifficulty.easy,
       ),
       completed: json['completed'] ?? false,
     );

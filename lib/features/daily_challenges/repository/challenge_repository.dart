@@ -27,7 +27,7 @@ class ChallengeRepository {
       return existing;
     }
 
-    // Only generate using AI if it's the current active day
+
     final currentDay = await _service.getCurrentDay();
     if (day == currentDay) {
       final difficulty = ChallengeDifficultyService.getDifficulty(currentDay);
@@ -37,7 +37,6 @@ class ChallengeRepository {
         difficulty: difficulty.title,
       );
 
-      // Save to database
       await _service.saveTodayChallenges(
         currentDay: currentDay,
         challenges: aiResponse.challenges,

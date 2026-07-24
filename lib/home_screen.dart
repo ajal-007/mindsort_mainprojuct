@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mainsupabase_projuct/features/ai_coach.dart/screen/chat_screen.dart';
 import 'core/constants/app_colors.dart';
 import 'core/constants/app_icons.dart';
 import 'core/constants/app_text.dart';
 import 'core/constants/app_duration.dart';
 import 'shared/widgets/cyber_grid_painter.dart';
 import 'shared/widgets/glowing_orb.dart';
-import 'features/ai_coach.dart/ai_coach_page.dart';
 import 'features/dashboard/mental_dashboard.dart';
 import 'features/profile/profile_page.dart';
 import 'features/daily_challenges/presentation/screens/journey_screen.dart';
@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final List<Widget> pages = [
       const Insight(),
       const JourneyScreen(),
-      const AICoach(),
+      const ChatScreen(),
       const Profile(),
     ];
 

@@ -85,32 +85,9 @@ void initState() {
 
               const SizedBox(height: AppSizes.xxxl),
 
-              const Text(
-                AppText.neuromorphicAdvice,
-                style: AppTextStyles.insightSectionTitle,
-              ),
-
-              const Text(
-                AppText.neuromorphicAdvice,
-                style: AppTextStyles.insightSectionTitle,
-              ),
-              const SizedBox(height: AppSizes.md),
-
-              // Column(
-              //   children: dashboardProvider.adviceCards.map((card) {
-              //     final isPeak = card['type'] == 'peak';
-              //     return Padding(
-              //       padding: const EdgeInsets.only(bottom: AppSizes.md),
-              //       child: _buildAdviceCard(
-              //         title: card['title']!,
-              //         desc: card['desc']!,
-              //         icon: isPeak ? AppIcons.twilight : AppIcons.psychology,
-              //         color: isPeak ? AppColors.secondaryAccent : AppColors.primaryAccent,
-              //       ),
-              //     );
-              //   }).toList(),
-              // ),
-              const SizedBox(height: AppSizes.xxxl),
+             
+          
+             
             ],
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:mainsupabase_projuct/features/ai_coach.dart/models/chat_message_model.dart';
 
 
@@ -35,16 +36,48 @@ class ChatBubble extends StatelessWidget {
               : Colors.grey.shade200,
           borderRadius: BorderRadius.circular(18),
         ),
-        child: Text(
-          message.content,
-          style: TextStyle(
-            color: isUser
-                ? Colors.white
-                : Colors.black87,
+        child: isUser
+    ? Text(
+        message.content,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 15,
+        ),
+      )
+    : MarkdownBody(
+        data: message.content,
+        selectable: true,
+        styleSheet: MarkdownStyleSheet(
+          p: const TextStyle(
+            color: Colors.black87,
             fontSize: 15,
           ),
+          h1: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+          h2: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+          h3: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+          strong: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+          listBullet: const TextStyle(
+            color: Colors.black87,
+          ),
+          code: TextStyle(
+            backgroundColor: Colors.grey.shade300,
+            fontFamily: 'monospace',
+          ),
         ),
+      ),
       ),
     );
   }
 }
+

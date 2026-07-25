@@ -7,7 +7,6 @@ import 'package:mainsupabase_projuct/features/ai_coach.dart/widgets/empty_chat.d
 import 'package:mainsupabase_projuct/features/ai_coach.dart/widgets/typing_indicator.dart';
 import 'package:provider/provider.dart';
 
-
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
@@ -16,6 +15,20 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final ScrollController _scrollController = ScrollController();
+  int _lastMessageCount = 0;
+  void _scrollToBottom() {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (!_scrollController.hasClients) return;
+
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  });
+}
+
   @override
   void initState() {
     super.initState();
@@ -24,13 +37,16 @@ class _ChatScreenState extends State<ChatScreen> {
       context.read<ChatProvider>().initialize();
     });
   }
+  @override
+void dispose() {
+  _scrollController.dispose();
+  super.dispose();
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("MindSort AI"),
-      ),
+      appBar: AppBar(title: const Text("MindSort AI")),
 
       drawer: const ChatDrawer(),
 
@@ -40,15 +56,19 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Consumer<ChatProvider>(
               builder: (context, provider, child) {
                 if (provider.isLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (provider.messages.isEmpty) {
                   return const EmptyChat();
                 }
+
+                if (provider.messages.length != _lastMessageCount) {
+                  _lastMessageCount = provider.messages.length;
+                  _scrollToBottom();
+                }
                 return ChatMessageList(
                   messages: provider.messages,
+                  scrollController: _scrollController,
                 );
               },
             ),

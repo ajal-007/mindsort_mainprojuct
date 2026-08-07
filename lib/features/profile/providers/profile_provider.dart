@@ -1,41 +1,63 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../models/profile_model.dart';
+import '../models/profile_stats_model.dart';
 import '../repositories/profile_repository.dart';
 
 class ProfileProvider extends ChangeNotifier {
-  final ProfileRepository _profileRepository = ProfileRepository();
+  final ProfileRepository _repository = ProfileRepository();
+
   StreamSubscription<AuthState>? _authSubscription;
 
-  Map<String, dynamic>? _profileData;
-  Map<String, dynamic>? get profileData => _profileData;
+  ProfileModel? _profile;
+  ProfileModel? get profile => _profile;
+
+  ProfileStatsModel? _stats;
+  ProfileStatsModel? get stats => _stats;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  String? _error;
+  String? get error => _error;
+
   ProfileProvider() {
-    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      if (data.event == AuthChangeEvent.signedOut) {
-        _profileData = null;
-        _isLoading = false;
-        notifyListeners();
-      }
-    });
+    _authSubscription =
+        Supabase.instance.client.auth.onAuthStateChange.listen(
+      (data) {
+        if (data.event == AuthChangeEvent.signedOut) {
+          _profile = null;
+          _stats = null;
+          _error = null;
+          _isLoading = false;
+          notifyListeners();
+        }
+      },
+    );
   }
 
-  Future<Map<String, dynamic>?> loadUserProfile(String userId) async {
-    _isLoading = true;
-    notifyListeners();
-
+  Future<void> loadProfile(String userId) async {
     try {
-      _profileData = await _profileRepository.getProfile(userId);
-      return _profileData;
-    } catch (_) {
-      return null;
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      _profile = await _repository.getProfile(userId);
+
+      _stats = await _repository.getProfileStats(userId);
+    } catch (e) {
+      _error = e.toString();
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> refresh(String userId) async {
+    await loadProfile(userId);
   }
 
   @override

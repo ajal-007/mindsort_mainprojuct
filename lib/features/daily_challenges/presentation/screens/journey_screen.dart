@@ -68,7 +68,8 @@ class _JourneyScreenState extends State<JourneyScreen> {
 
     // Day 1 is at the bottom, Day 30 at the top
     final double dayY = getYForDay(currentDay, totalHeight);
-    final double targetOffset = dayY - 300.0; // position it in the middle of viewport
+    final double targetOffset =
+        dayY - 300.0; // position it in the middle of viewport
     final double maxScroll = _scrollController.position.maxScrollExtent;
     final double minScroll = _scrollController.position.minScrollExtent;
 
@@ -150,7 +151,8 @@ class _JourneyScreenState extends State<JourneyScreen> {
                               child: DayNodeWidget(
                                 day: d,
                                 currentDay: currentDay,
-                                onTap: () => _handleDayTap(context, d, currentDay),
+                                onTap: () =>
+                                    _handleDayTap(context, d, currentDay),
                               ),
                             ),
                         ],
@@ -207,13 +209,14 @@ class _JourneyScreenState extends State<JourneyScreen> {
 
   Widget _buildStreakBadge() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.md, vertical: AppSizes.sm),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.md,
+        vertical: AppSizes.sm,
+      ),
       decoration: BoxDecoration(
         color: AppColors.orangeAccent.withOpacity(0.1),
         borderRadius: AppRadius.r12,
-        border: Border.all(
-          color: AppColors.orangeAccent.withOpacity(0.25),
-        ),
+        border: Border.all(color: AppColors.orangeAccent.withOpacity(0.25)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -224,13 +227,19 @@ class _JourneyScreenState extends State<JourneyScreen> {
             size: 16,
           ),
           const SizedBox(width: AppSizes.xs),
-          Text(
-            "7-Day Streak",
-            style: const TextStyle(
-              color: AppColors.orangeAccent,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
+          Consumer<ChallengeProvider>(
+            builder: (context, provider, child) {
+              final streak = provider.journeyProgress?.currentStreak ?? 0;
+
+              return Text(
+                "$streak-Day Streak",
+                style: const TextStyle(
+                  color: AppColors.orangeAccent,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -245,9 +254,7 @@ class _JourneyScreenState extends State<JourneyScreen> {
         decoration: BoxDecoration(
           color: AppColors.white.withOpacity(0.04),
           borderRadius: AppRadius.r20,
-          border: Border.all(
-            color: AppColors.white.withOpacity(0.08),
-          ),
+          border: Border.all(color: AppColors.white.withOpacity(0.08)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,13 +270,20 @@ class _JourneyScreenState extends State<JourneyScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Text(
-                  "$completedDays / 30 Days Completed",
-                  style: TextStyle(
-                    color: AppColors.white.withOpacity(0.6),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                  ),
+                Consumer<ChallengeProvider>(
+                  builder: (context, provider, child) {
+                    final completedDays =
+                        provider.journeyProgress?.completedDays ?? 0;
+
+                    return Text(
+                      "$completedDays / 30 Days Completed",
+                      style: TextStyle(
+                        color: AppColors.white.withOpacity(0.6),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -279,7 +293,9 @@ class _JourneyScreenState extends State<JourneyScreen> {
               child: LinearProgressIndicator(
                 value: percent,
                 backgroundColor: AppColors.white.withOpacity(0.06),
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primaryAccent),
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  AppColors.primaryAccent,
+                ),
                 minHeight: 6,
               ),
             ),
@@ -296,11 +312,18 @@ class _JourneyScreenState extends State<JourneyScreen> {
         SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.lock_rounded, color: AppColors.orangeAccent, size: 20),
+              const Icon(
+                Icons.lock_rounded,
+                color: AppColors.orangeAccent,
+                size: 20,
+              ),
               const SizedBox(width: AppSizes.md),
               const Text(
                 "Complete previous days to unlock this challenge.",
-                style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
@@ -315,9 +338,7 @@ class _JourneyScreenState extends State<JourneyScreen> {
       final provider = context.read<ChallengeProvider>();
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => ChallengePage(day: day),
-        ),
+        MaterialPageRoute(builder: (context) => ChallengePage(day: day)),
       ).then((_) {
         provider.loadJourneyState().then((_) {
           _scrollToCurrentDay();
@@ -361,12 +382,19 @@ class _JourneyScreenState extends State<JourneyScreen> {
               onPressed: () {
                 _loadInitialData();
               },
-              icon: const Icon(Icons.refresh_rounded, color: AppColors.white, size: 18),
+              icon: const Icon(
+                Icons.refresh_rounded,
+                color: AppColors.white,
+                size: 18,
+              ),
               label: const Text("Retry Connection"),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryAccent.withOpacity(0.12),
                 foregroundColor: AppColors.primaryAccent,
-                padding: const EdgeInsets.symmetric(horizontal: AppSizes.xxl, vertical: AppSizes.md),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSizes.xxl,
+                  vertical: AppSizes.md,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: AppRadius.r12,
                   side: BorderSide(
@@ -398,7 +426,8 @@ class DayNodeWidget extends StatefulWidget {
   State<DayNodeWidget> createState() => _DayNodeWidgetState();
 }
 
-class _DayNodeWidgetState extends State<DayNodeWidget> with SingleTickerProviderStateMixin {
+class _DayNodeWidgetState extends State<DayNodeWidget>
+    with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 
@@ -411,10 +440,7 @@ class _DayNodeWidgetState extends State<DayNodeWidget> with SingleTickerProvider
     );
 
     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.25).animate(
-      CurvedAnimation(
-        parent: _pulseController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
     if (widget.day == widget.currentDay) {
@@ -453,15 +479,27 @@ class _DayNodeWidgetState extends State<DayNodeWidget> with SingleTickerProvider
     if (isCompleted) {
       nodeColor = AppColors.challengePurple;
       glowColor = AppColors.challengePurple.withOpacity(0.4);
-      childIcon = const Icon(Icons.check_rounded, color: AppColors.white, size: 24);
+      childIcon = const Icon(
+        Icons.check_rounded,
+        color: AppColors.white,
+        size: 24,
+      );
     } else if (isCurrent) {
       nodeColor = AppColors.primaryAccent;
       glowColor = AppColors.primaryAccent.withOpacity(0.6);
-      childIcon = const Icon(Icons.play_arrow_rounded, color: AppColors.white, size: 28);
+      childIcon = const Icon(
+        Icons.play_arrow_rounded,
+        color: AppColors.white,
+        size: 28,
+      );
     } else {
       nodeColor = AppColors.white.withOpacity(0.06);
       glowColor = AppColors.transparent;
-      childIcon = Icon(Icons.lock_rounded, color: AppColors.white.withOpacity(0.3), size: 20);
+      childIcon = Icon(
+        Icons.lock_rounded,
+        color: AppColors.white.withOpacity(0.3),
+        size: 20,
+      );
     }
 
     Widget content = Container(
@@ -471,18 +509,20 @@ class _DayNodeWidgetState extends State<DayNodeWidget> with SingleTickerProvider
         color: isLocked ? AppColors.surfaceDark : nodeColor,
         shape: BoxShape.circle,
         border: Border.all(
-          color: isCurrent 
-              ? AppColors.electricCyan 
-              : (isCompleted ? AppColors.challengePurple.withOpacity(0.8) : AppColors.white.withOpacity(0.1)),
+          color: isCurrent
+              ? AppColors.electricCyan
+              : (isCompleted
+                    ? AppColors.challengePurple.withOpacity(0.8)
+                    : AppColors.white.withOpacity(0.1)),
           width: 2.0,
         ),
-        boxShadow: !isLocked 
+        boxShadow: !isLocked
             ? [
                 BoxShadow(
                   color: glowColor,
                   blurRadius: isCurrent ? 14 : 8,
                   spreadRadius: isCurrent ? 2 : 0,
-                )
+                ),
               ]
             : null,
       ),
@@ -553,7 +593,9 @@ class _DayNodeWidgetState extends State<DayNodeWidget> with SingleTickerProvider
           Text(
             "Day ${widget.day}",
             style: TextStyle(
-              color: isLocked ? AppColors.white.withOpacity(0.3) : AppColors.white,
+              color: isLocked
+                  ? AppColors.white.withOpacity(0.3)
+                  : AppColors.white,
               fontSize: 12,
               fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
             ),

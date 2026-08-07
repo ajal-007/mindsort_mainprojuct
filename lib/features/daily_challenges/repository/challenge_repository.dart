@@ -1,5 +1,6 @@
 import 'package:mainsupabase_projuct/features/daily_challenges/models/challenge_difficulty.dart';
 import 'package:mainsupabase_projuct/features/daily_challenges/models/challenge_model.dart';
+import 'package:mainsupabase_projuct/features/daily_challenges/models/journey_progress_model.dart';
 import 'package:mainsupabase_projuct/features/daily_challenges/services/challenge_ai_service.dart';
 import 'package:mainsupabase_projuct/features/daily_challenges/services/challenge_difficulty.dart';
 import 'package:mainsupabase_projuct/features/dashboard/models/dashboardata.dart';
@@ -7,7 +8,6 @@ import '../services/challenge_service.dart';
 
 class ChallengeRepository {
   final ChallengeService _service = ChallengeService();
-
   final ChallengeAIService _aiService = ChallengeAIService();
 
   Future<List<Challenge>> getTodayChallenges({
@@ -26,7 +26,6 @@ class ChallengeRepository {
     if (existing.isNotEmpty) {
       return existing;
     }
-
 
     final currentDay = await _service.getCurrentDay();
     if (day == currentDay) {
@@ -57,7 +56,11 @@ class ChallengeRepository {
     await _service.updateChallengeCompletion(challenge.id, completed);
   }
 
-  Future<void> advanceDay(int nextDay) async {
-    await _service.updateCurrentDay(nextDay);
+  Future<void> checkAndUnlockNextDay() async {
+    await _service.checkAndUnlockNextDay();
+  }
+
+  Future<JourneyProgressModel> getJourneyProgress() async {
+    return await _service.getJourneyProgress();
   }
 }

@@ -720,13 +720,10 @@ class _ChallengePageState extends State<ChallengePage> {
       ),
       child: ElevatedButton(
         onPressed: allCompleted
-            ? () {
-                final navigator = Navigator.of(context);
-                provider.advanceToNextDay(dashboard: dashboard).then((_) {
-                  navigator.pop();
-                });
-              }
-            : null,
+    ? () {
+        Navigator.pop(context);
+      }
+    : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryAccent,
           disabledBackgroundColor: AppColors.white.withOpacity(0.04),
@@ -742,7 +739,7 @@ class _ChallengePageState extends State<ChallengePage> {
           shadowColor: AppColors.primaryAccent.withOpacity(0.4),
         ),
         child: Text(
-          allCompleted ? "Continue to Day $nextDay" : "Complete remaining challenges",
+          allCompleted ? "Complete Today's Journey": "Complete remaining challenges",
           style: TextStyle(
             color: allCompleted ? AppColors.white : AppColors.white.withOpacity(0.25),
             fontWeight: FontWeight.bold,

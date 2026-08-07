@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mainsupabase_projuct/features/profile/models/profile_stats_model.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_icons.dart';
@@ -29,7 +30,9 @@ class _ProfileState extends State<Profile> {
       context,
       listen: false,
     );
-    Future.microtask(() => profileProvider.loadUserProfile(userId));
+   Future.microtask(() {
+  profileProvider.loadProfile(userId);
+});
   }
 
   @override
@@ -37,7 +40,8 @@ class _ProfileState extends State<Profile> {
     final profileProvider = context.watch<ProfileProvider>();
     final authProvider = context.read<AuthProvider>();
 
-    if (profileProvider.isLoading && profileProvider.profileData == null) {
+   if (profileProvider.isLoading &&
+    profileProvider.profile == null) {
       return const Scaffold(
         backgroundColor: AppColors.transparent,
         body: Center(
@@ -48,13 +52,15 @@ class _ProfileState extends State<Profile> {
       );
     }
 
-    final profile = profileProvider.profileData;
+    final profile = profileProvider.profile;
+final stats = profileProvider.stats;
     final username =
-        profile?[AppText.usernameLabel.toLowerCase()] ??
-        AppText.defaultExplorer;
-    final email =
-        profile?[AppText.emailAddressLabel.toLowerCase()] ??
-        authProvider.getCurrentUser()?.email ??
+    profile?.username ??
+    AppText.defaultExplorer;
+   final email =
+    profile?.email ??
+    authProvider.getCurrentUser()?.email ??
+    'anonymous@mindsort.ai';
         'anonymous@mindsort.ai';
     final initial = username.isNotEmpty ? username[0].toUpperCase() : 'E';
 
@@ -69,7 +75,12 @@ class _ProfileState extends State<Profile> {
           ),
           child: Column(
             children: [
-              _buildHeaderCard(username, email, initial),
+             _buildHeaderCard(
+  username,
+  email,
+  initial,
+  stats,
+),
               const SizedBox(height: AppSizes.giant),
 
               const Align(
@@ -128,7 +139,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget _buildHeaderCard(String username, String email, String initial) {
+  Widget _buildHeaderCard(String username, String email, String initial,ProfileStatsModel? stats,) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSizes.giant),
@@ -175,14 +186,23 @@ class _ProfileState extends State<Profile> {
           Divider(color: AppColors.white.withOpacity(0.06), height: 1),
           const SizedBox(height: AppSizes.xxl),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildMiniStat('12d', AppText.streakStat),
-              _buildMiniStat('48', AppText.logsStat),
-              _buildMiniStat('Pro', AppText.rankStat),
-            ],
-          ),
+         Row(
+  mainAxisAlignment: MainAxisAlignment.spaceAround,
+  children: [
+    _buildMiniStat(
+      '${stats?.currentStreak ?? 0}',
+      'Streak',
+    ),
+    _buildMiniStat(
+      '${stats?.assessments ?? 0}',
+      'Assessments',
+    ),
+    _buildMiniStat(
+      '${stats?.completedChallenges ?? 0}',
+      'Challenges',
+    ),
+  ],
+),
         ],
       ),
     );

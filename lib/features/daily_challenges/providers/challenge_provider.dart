@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mainsupabase_projuct/features/daily_challenges/models/journey_progress_model.dart';
 
 import '../../dashboard/models/dashboardata.dart';
 import '../models/challenge_model.dart';
@@ -10,6 +11,8 @@ class ChallengeProvider extends ChangeNotifier {
   List<Challenge> _todayChallenges = [];
   List<Challenge> get todayChallenges => _todayChallenges;
 
+  JourneyProgressModel? _journeyProgress;
+  JourneyProgressModel? get journeyProgress => _journeyProgress;
   int _currentDay = 1;
   int get currentDay => _currentDay;
 
@@ -28,7 +31,10 @@ class ChallengeProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      _currentDay = await _repository.getCurrentDay();
+      await _repository.checkAndUnlockNextDay();
+
+      _journeyProgress = await _repository.getJourneyProgress();
+      _currentDay = _journeyProgress!.currentDay;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -45,6 +51,8 @@ class ChallengeProvider extends ChangeNotifier {
       _isLoading = true;
       _error = null;
       notifyListeners();
+
+      await _repository.checkAndUnlockNextDay();
 
       _todayChallenges = await _repository.getTodayChallenges(
         dashboard: dashboard,
@@ -83,7 +91,9 @@ class ChallengeProvider extends ChangeNotifier {
     final newCompletedStatus = !challenge.completed;
 
     try {
-      final index = _challengesForSelectedDay.indexWhere((c) => c.id == challenge.id);
+      final index = _challengesForSelectedDay.indexWhere(
+        (c) => c.id == challenge.id,
+      );
       if (index != -1) {
         _challengesForSelectedDay[index] = Challenge(
           id: challenge.id,
@@ -106,9 +116,7 @@ class ChallengeProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> advanceToNextDay({
-    required DashboardData dashboard,
-  }) async {
+  Future<void> advanceToNextDay({required DashboardData dashboard}) async {
     try {
       _isLoading = true;
       _error = null;
@@ -116,7 +124,7 @@ class ChallengeProvider extends ChangeNotifier {
 
       final current = await _repository.getCurrentDay();
       final nextDay = current + 1;
-      await _repository.advanceDay(nextDay);
+
       _currentDay = nextDay;
 
       // Refresh today's challenges inside provider

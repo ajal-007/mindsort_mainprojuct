@@ -704,7 +704,7 @@ class _ChallengePageState extends State<ChallengePage> {
       );
     }
 
-    final int nextDay = widget.day + 1;
+     
 
     return Container(
       width: double.infinity,

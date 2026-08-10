@@ -7,7 +7,7 @@ import 'core/constants/app_duration.dart';
 import 'shared/widgets/cyber_grid_painter.dart';
 import 'shared/widgets/glowing_orb.dart';
 import 'features/dashboard/mental_dashboard.dart';
-import 'features/profile/profile_page.dart';
+import 'features/profile/screens/profile_page.dart';
 import 'features/daily_challenges/presentation/screens/journey_screen.dart';
 
 class HomeScreen extends StatefulWidget {

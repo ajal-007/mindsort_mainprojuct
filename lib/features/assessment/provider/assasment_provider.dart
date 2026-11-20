@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'package:mainsupabase_projuct/features/assessment/assasment_questions.dart';
 import 'package:mainsupabase_projuct/features/assessment/models/assasment_answer.dart';
 import 'package:mainsupabase_projuct/features/assessment/models/assasment_models.dart';
-
-
 
 class AssessmentProvider extends ChangeNotifier {
   final List<AssessmentQuestionModel> _questions =
@@ -19,15 +18,19 @@ class AssessmentProvider extends ChangeNotifier {
 
   int get currentIndex => _currentIndex;
 
-  AssessmentQuestionModel get currentQuestion => _questions[_currentIndex];
+  AssessmentQuestionModel get currentQuestion =>
+      _questions[_currentIndex];
 
   bool get hasPrevious => _currentIndex > 0;
 
-  bool get hasNext => _currentIndex < _questions.length - 1;
+  bool get hasNext =>
+      _currentIndex < _questions.length - 1;
 
-  bool get isCompleted => _answers.length == _questions.length;
+  bool get isCompleted =>
+      _answers.length == _questions.length;
 
-  double get progress => (_currentIndex + 1) / _questions.length;
+  double get progress =>
+      (_currentIndex + 1) / _questions.length;
 
   void selectAnswer(int score) {
     _answers[currentQuestion.id] = AssessmentAnswer(
@@ -39,7 +42,8 @@ class AssessmentProvider extends ChangeNotifier {
   }
 
   bool isSelected(int score) {
-    return _answers[currentQuestion.id]?.selectedScore == score;
+    return _answers[currentQuestion.id]?.selectedScore ==
+        score;
   }
 
   void nextQuestion() {
@@ -57,6 +61,13 @@ class AssessmentProvider extends ChangeNotifier {
   }
 
   void reset() {
+    _currentIndex = 0;
+    _answers.clear();
+    notifyListeners();
+  }
+
+  /// Starts a completely new assessment.
+  void startNewAssessment() {
     _currentIndex = 0;
     _answers.clear();
     notifyListeners();

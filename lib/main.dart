@@ -21,7 +21,7 @@ Future<void> main() async {
 
   await Supabase.initialize(
     url: AppApi.supabaseUrl,
-    anonKey: AppApi.supabaseAnonKey,
+    publishableKey: AppApi.supabaseAnonKey,
   );
 
   runApp(

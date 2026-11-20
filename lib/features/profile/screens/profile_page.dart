@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mainsupabase_projuct/features/assessment/assasment_screen.dart';
+import 'package:mainsupabase_projuct/features/assessment/provider/assasment_provider.dart';
 import 'package:mainsupabase_projuct/features/profile/models/profile_stats_model.dart';
 import 'package:provider/provider.dart';
 
@@ -107,15 +109,23 @@ class _ProfileState extends State<Profile> {
               const SizedBox(height: AppSizes.md),
 
               // Re-assessment
-              _buildSettingsTile(
-                icon: Icons.refresh_rounded,
-                title: 'Re-assessment',
-                subtitle: 'Take a new mental assessment',
-                onTap: () {
-                  // TODO:
-                  // Navigate to your existing assessment screen.
-                },
-              ),
+             _buildSettingsTile(
+  icon: Icons.refresh_rounded,
+  title: 'Re-assessment',
+  subtitle: 'Take a new mental assessment',
+  onTap: () {
+    context
+        .read<AssessmentProvider>()
+        .startNewAssessment();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const AssasmentScreen(),
+      ),
+    );
+  },
+),
 
               const SizedBox(height: AppSizes.md),
 

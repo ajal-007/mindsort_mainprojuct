@@ -1,4 +1,4 @@
-package com.example.mainsupabase_projuct
+package com.ajal.mindsort
 
 import io.flutter.embedding.android.FlutterActivity
 
